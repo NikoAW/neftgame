@@ -1,278 +1,183 @@
 <!DOCTYPE html>
 <html lang="az" translate="no">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neft Game | Premium Access</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Orbitron:wght@700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #00f2ff;
-            --secondary: #7000ff;
-            --bg: #08080a;
-            --card-bg: #121216;
-            --text: #ffffff;
-            --error: #ff3333;
-            --success: #00ff88;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neft Game - Ultimate System v5.0</title>
+<style>
+:root{
+--primary:#00f2ff;--secondary:#7000ff;--bg:#0a0a0c;--card-bg:#16161a;
+--text:#fff;--error:#ff4d4d;--success:#00ff88;--chat-bot:#25252b;
+--chat-user:#7000ff;
+}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:var(--bg);color:var(--text);display:flex;justify-content:center;align-items:center;min-height:100vh;overflow-x:hidden;position:relative;}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body { 
-            background-color: var(--bg); 
-            color: var(--text); 
-            font-family: 'Inter', sans-serif;
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+.system-status{position:fixed;top:15px;left:15px;padding:10px 15px;border-radius:12px;font-weight:bold;font-size:0.85rem;color:#000;background:var(--success);z-index:999;box-shadow:0 0 15px var(--primary);}
+.system-status.off{background:#ff4d4d;}
 
-        /* Sistem Statusu - Sol Üst */
-        .status-tag {
-            position: fixed; top: 15px; left: 15px;
-            padding: 6px 12px; border-radius: 20px;
-            font-size: 11px; font-weight: 600;
-            letter-spacing: 1px; border: 1px solid rgba(0,255,136,0.3);
-            display: flex; align-items: center; gap: 6px;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
-            z-index: 100;
-        }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--success); box-shadow: 0 0 8px var(--success); }
-
-        /* Əsas Panel */
-        .panel {
-            width: 90%; max-width: 400px;
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 30px;
-            border: 1px solid rgba(255,255,255,0.05);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            position: relative;
-        }
-
-        h2 { 
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.2rem; color: var(--primary);
-            margin-bottom: 25px; letter-spacing: 2px;
-            text-align: center;
-        }
-
-        .step { display: none; width: 100%; }
-        .step.active { display: block; animation: slideUp 0.4s ease-out; }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Inputlar */
-        input, select {
-            width: 100%; padding: 14px 18px;
-            background: #1a1a20; border: 1px solid #2a2a32;
-            border-radius: 12px; color: white;
-            font-size: 15px; margin-bottom: 15px;
-            outline: none; transition: 0.3s;
-        }
-        input:focus { border-color: var(--primary); background: #202028; }
-
-        /* Düymə */
-        .btn {
-            width: 100%; padding: 15px;
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
-            border: none; border-radius: 12px;
-            color: white; font-weight: 600; font-size: 15px;
-            cursor: pointer; transition: 0.3s;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 242, 255, 0.3); }
-
-        /* Loading Ekranı */
-        .loader-container { text-align: center; padding: 20px 0; }
-        .bar-bg { width: 100%; height: 6px; background: #1a1a20; border-radius: 10px; margin: 20px 0; overflow: hidden; }
-        .bar-fill { width: 0%; height: 100%; background: var(--primary); transition: 0.4s; }
-        .loader-text { font-size: 13px; color: var(--primary); font-family: 'Orbitron', sans-serif; }
-
-        /* Admin Panel */
-        #admin-panel { 
-            margin-top: 20px; padding-top: 20px; border-top: 1px solid #2a2a32;
-            display: none; text-align: left;
-        }
-        .admin-title { font-size: 12px; color: #666; margin-bottom: 10px; }
-
-        /* Dəstək Düyməsi */
-        .support-link {
-            text-align: center; margin-bottom: 20px;
-        }
-        .support-link button {
-            background: transparent; border: 1px solid #2a2a32;
-            color: #888; padding: 8px 16px; border-radius: 20px;
-            font-size: 12px; cursor: pointer; transition: 0.3s;
-        }
-        .support-link button:hover { border-color: var(--primary); color: var(--primary); }
-
-    </style>
+.container{width:95%;max-width:450px;background:var(--card-bg);padding:25px;border-radius:20px;border:1px solid rgba(255,255,255,0.05);text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.5);}
+h2{color:var(--primary);text-transform:uppercase;letter-spacing:2px;margin-bottom:20px;font-size:1.4rem;}
+input,select{width:100%;padding:14px;margin:10px 0;background:#222;border:1px solid #333;border-radius:12px;color:white;outline:none;transition:0.3s;}
+input:focus{border-color:var(--primary);}
+.main-btn{width:100%;padding:16px;border-radius:12px;background:linear-gradient(45deg,var(--secondary),var(--primary));color:white;font-weight:bold;cursor:pointer;border:none;text-transform:uppercase;margin-top:10px;box-shadow:0 4px 15px rgba(112,0,255,0.3);}
+.step{display:none;}.step.active{display:block;}
+.progress-bar{height:10px;background:#222;border-radius:5px;overflow:hidden;margin:25px 0;}
+.progress-fill{height:100%;width:0%;background:var(--primary);transition:0.4s;}
+#receiptCanvas{width:100%;border-radius:10px;margin-top:15px;border:1px solid #333;background:#000;}
+#admin-panel{display:none;margin-top:20px;padding:15px;background:#000;border-radius:15px;border:1px solid var(--primary);text-align:left;}
+.code-card{background:#111;padding:12px;border-radius:10px;margin-bottom:10px;font-size:11px;border-left:4px solid var(--primary);position:relative;}
+.delete-btn{position:absolute;right:10px;top:10px;color:var(--error);cursor:pointer;font-weight:bold;padding:5px;}
+#chat-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg);z-index:999;flex-direction:column;}
+.chat-header{padding:15px 20px;background:var(--card-bg);border-bottom:1px solid #333;display:flex;justify-content:space-between;align-items:center;}
+.op-info{display:flex;align-items:center;gap:12px;}
+.op-img{width:45px;height:45px;border-radius:50%;border:2px solid var(--primary);}
+.chat-body{flex-grow:1;padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:15px;}
+.message{padding:12px 16px;border-radius:18px;max-width:85%;font-size:0.9rem;line-height:1.4;}
+.bot-msg{background:var(--chat-bot);align-self:flex-start;border-bottom-left-radius:4px;white-space:pre-wrap;}
+.user-msg{background:var(--chat-user);align-self:flex-end;border-bottom-right-radius:4px;}
+</style>
 </head>
-<body onload="checkSystem()">
+<body onload="initSystem()">
+<div class="system-status" id="system-status">🟢 Sistem Aktivdir</div>
 
-    <div class="status-tag" id="main-status">
-        <div class="status-dot"></div>
-        <span id="status-text">SİSTEM AKTİVDİR</span>
-    </div>
+<div class="container">
+<div id="step1" class="step active">
+<h2>SİSTEMƏ GİRİŞ</h2>
+<input type="text" id="access-code" placeholder="Aktivasiya Kodunu Daxil Edin">
+<p id="error-msg" style="color:var(--error);font-size:0.8rem;min-height:20px;margin-top:5px;"></p>
+<button class="main-btn" onclick="verifyCode()">DAXİL OL</button>
 
-    <div class="panel">
-        
-        <div id="step1" class="step active">
-            <div class="support-link"><button onclick="alert('Dəstək tezliklə aktiv olacaq!')">DESTEK MASASI</button></div>
-            <h2>ACCESS PANEL</h2>
-            <input type="text" id="access-code" placeholder="Aktivasiya kodu">
-            <p id="error-msg" style="color:var(--error); font-size:12px; margin-bottom:10px; text-align:center;"></p>
-            <button class="btn" onclick="verifyCode()">Daxil ol</button>
+<div id="admin-panel">
+<h3 style="color:var(--primary);font-size:1rem;margin-bottom:15px;border-bottom:1px solid #333;padding-bottom:10px;">ADMİN STRATEJİ PANELİ</h3>
+<label><input type="checkbox" id="system-toggle" onchange="toggleSystem()"> Sistem Aktiv/Deaktiv</label><br><br>
+<div id="codes-list" style="max-height:300px;overflow-y:auto;"></div>
+<input type="text" id="new-code-input" placeholder="Yeni Kod (Məs: VIP-99)">
+<select id="expiry-select">
+<option value="1">1 Saatlıq</option>
+<option value="24">24 Saatlıq</option>
+<option value="168">7 Günlük</option>
+<option value="8760">Həmişəlik</option>
+</select>
+<button class="main-btn" onclick="addNewCode()" style="background:var(--success);color:black;">KODU AKTİVLƏŞDİR</button>
+</div>
+</div>
 
-            <div id="admin-panel">
-                <p class="admin-title">ADMİN İDARƏETMƏ</p>
-                <button class="btn" id="toggle-btn" onclick="toggleSystem()" style="background:#222; font-size:12px;">Sistemi Bağla</button>
-                <input type="text" id="new-code" placeholder="Yeni kod yarat" style="margin-top:10px;">
-                <button class="btn" onclick="addCode()" style="font-size:12px;">Kodu Əlavə Et</button>
-            </div>
-        </div>
+<div id="step-loader" class="step">
+<h2 id="loader-title">EMAL EDİLİR...</h2>
+<div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+<p id="loader-status" style="color:var(--primary);font-size:0.8rem;">Məlumatlar serverdən alınır...</p>
+</div>
 
-        <div id="step-loader" class="step">
-            <div class="loader-container">
-                <p class="loader-text" id="loader-msg">CRYPTING...</p>
-                <div class="bar-bg"><div class="bar-fill" id="bar-fill"></div></div>
-                <p style="font-size:11px; color:#555;">Server protokolları yoxlanılır</p>
-            </div>
-        </div>
+<div id="step2" class="step">
+<h2>SİFARİŞ MƏLUMATI</h2>
+<select id="packet-select">
+<option value="660 UC (5 AZN)">660 UC • 5 AZN</option>
+<option value="1920 UC (13 AZN)">1920 UC • 13 AZN</option>
+<option value="3120 UC (21 AZN)">3120 UC • 21 AZN</option>
+<option value="8100 UC (35 AZN)">8100 UC • 35 AZN</option>
+</select>
+<input type="number" id="player-id" placeholder="PUBG Mobile ID">
+<input type="text" id="phone-num" value="+994" placeholder="Əlaqə Nömrəsi">
+<button class="main-btn" onclick="processOrder()">SİFARİŞİ TƏSDİQLƏ</button>
+</div>
 
-        <div id="step2" class="step">
-            <h2>MƏLUMATLAR</h2>
-            <select id="uc-select">
-                <option value="660">660 UC - 5 AZN</option>
-                <option value="1920">1920 UC - 13 AZN</option>
-                <option value="8100">8100 UC - 35 AZN</option>
-            </select>
-            <input type="number" id="pubg-id" placeholder="PUBG ID">
-            <button class="btn" onclick="submitOrder()">Təsdiqlə</button>
-        </div>
+<div id="step3" class="step">
+<h2 style="color:var(--success);">SİFARİŞ UĞURLUDUR!</h2>
+<canvas id="receiptCanvas" width="400" height="500"></canvas>
+<button class="main-btn" onclick="downloadReceipt()">QƏBZİ YÜKLƏ (.PNG)</button>
+<button class="main-btn" onclick="location.reload()" style="background:#333;margin-top:10px;">YENİ SİFARİŞ</button>
+</div>
+</div>
 
-        <div id="step3" class="step" style="text-align:center;">
-            <div style="font-size:50px; color:var(--success); margin-bottom:15px;">✓</div>
-            <h2>UĞURLUDUR</h2>
-            <p style="font-size:14px; color:#888; margin-bottom:20px;">Sifarişiniz emal edildi!</p>
-            <button class="btn" onclick="location.reload()" style="background:#222;">Geri qayıt</button>
-        </div>
+<script>
+// GLOBAL
+let systemActive = true;
+let activeCode = "";
+const validCodes = ["XP-BAZAR-619679","XP-BAZAR-926863","XP-BAZAR-297973","XP-BAZAR-000196","XP-BAZAR-123456","XP-BAZAR-654321","XP-BAZAR-111222","XP-BAZAR-333444","XP-BAZAR-555666","XP-BAZAR-777888"];
+let usedCodes = [];
 
-    </div>
+// SYSTEM STATUS
+function updateSystemStatus(){
+  const s = document.getElementById("system-status");
+  s.innerText = systemActive?"🟢 Sistem Aktivdir":"🔴 Sistem Bağlıdır";
+  s.className = systemActive?"system-status":"system-status off";
+}
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+// ADMIN TOGGLE
+function toggleSystem(){
+  systemActive = document.getElementById("system-toggle").checked;
+  updateSystemStatus();
+}
 
-        // Sənin Firebase məlumatların bura gələcək (Köhnə koddakı kimi saxla)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCOq7UqFo6Y9ldVXRthRP6U02TayFkv53I",
-            authDomain: "neftgame-e4de3.firebaseapp.com",
-            projectId: "neftgame-e4de3",
-            storageBucket: "neftgame-e4de3.firebasestorage.app",
-            messagingSenderId: "27529172910",
-            appId: "1:27529172910:web:1a2a752e79295d47c39a3f"
-        };
+// CODE VERIFICATION
+function verifyCode(){
+  if(!systemActive && document.getElementById("access-code").value!=="Admin2026"){alert("Sistem hazırda bağlıdır!"); return;}
+  const code = document.getElementById("access-code").value.trim();
+  if(code==="Admin2026"){document.getElementById("admin-panel").style.display="block";return;}
+  if(usedCodes.includes(code)){document.getElementById("error-msg").innerText="Bu kod artıq istifadə edilib!";return;}
+  if(!validCodes.includes(code)){document.getElementById("error-msg").innerText="Kod tapılmadı!";return;}
+  usedCodes.push(code);
+  runLoader(()=>showStep('step2'));
+}
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        let systemActive = true;
+// LOADER
+function runLoader(cb){
+  showStep('step-loader');
+  let p=0;
+  const iv=setInterval(()=>{
+    p+=10;
+    document.getElementById('progress-fill').style.width=p+"%";
+    if(p>=100){clearInterval(iv);cb();}
+  },500);
+}
 
-        // Sistemi Yoxla
-        window.checkSystem = function() {
-            onSnapshot(doc(db, "settings", "global"), (snap) => {
-                if(snap.exists()){
-                    systemActive = snap.data().active;
-                    const st = document.getElementById('main-status');
-                    const txt = document.getElementById('status-text');
-                    if(!systemActive) {
-                        st.style.borderColor = "rgba(255,51,51,0.3)";
-                        st.querySelector('.status-dot').style.background = "var(--error)";
-                        txt.innerText = "SİSTEM BAĞLIDIR";
-                        txt.style.color = "var(--error)";
-                    } else {
-                        st.style.borderColor = "rgba(0,255,136,0.3)";
-                        st.querySelector('.status-dot').style.background = "var(--success)";
-                        txt.innerText = "SİSTEM AKTİVDİR";
-                        txt.style.color = "var(--success)";
-                    }
-                }
-            });
-        }
+// STEP SHOW
+function showStep(s){
+  document.querySelectorAll('.step').forEach(x=>x.classList.remove('active'));
+  document.getElementById(s).classList.add('active');
+}
 
-        // Giriş
-        window.verifyCode = async function() {
-            const code = document.getElementById('access-code').value.toUpperCase();
-            if(code === "ADMIN2026") {
-                document.getElementById('admin-panel').style.display = "block";
-                return;
-            }
+// ORDER PROCESS
+function processOrder(){
+  const pid = document.getElementById('player-id').value.trim();
+  const phone = document.getElementById('phone-num').value.trim();
+  const pack = document.getElementById('packet-select').value;
+  if(pid.length<5){alert("ID Yanlışdır!");return;}
+  if(!phone.startsWith("+994") || phone.length<13){alert("Nömrə düzgün deyil!");return;}
+  runLoader(()=>{generateReceipt(pid,pack,phone);showStep('step3');});
+}
 
-            if(!systemActive) {
-                alert("Sistem hazırda bağlıdır!");
-                return;
-            }
+// RECEIPT
+function generateReceipt(id,pack,phone){
+  const canvas = document.getElementById('receiptCanvas');
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle="#111"; ctx.fillRect(0,0,400,500);
+  ctx.strokeStyle="#00f2ff"; ctx.lineWidth=10; ctx.strokeRect(0,0,400,500);
+  ctx.fillStyle="#00f2ff"; ctx.font="bold 24px Arial"; ctx.fillText("NEFT GAME SHOP",90,60);
+  ctx.font="14px Arial"; ctx.fillText("RƏSMİ SİFARİŞ QƏBZİ",125,85);
+  ctx.strokeStyle="#333"; ctx.setLineDash([5,5]); ctx.beginPath(); ctx.moveTo(40,110); ctx.lineTo(360,110); ctx.stroke();
+  ctx.fillStyle="#fff"; ctx.font="16px Courier New";
+  const orderNo = Math.floor(Math.random()*999999);
+  ctx.fillText("TARİX: "+new Date().toLocaleString(),40,160);
+  ctx.fillText("SİFARİŞ NO: #"+orderNo,40,200);
+  ctx.fillText("OYUNÇU ID: "+id.replace(/\d(?=\d)/,()=>Math.floor(Math.random()*10)),40,240);
+  ctx.fillText("NÖMRƏ: "+phone,40,270);
+  ctx.fillText("MƏHSUL: "+pack,40,300);
+  ctx.fillText("STATUS: TƏSDİQLƏNDİ",40,340);
+  ctx.fillStyle="#00ff88"; ctx.font="bold 20px Arial"; ctx.fillText("ÖDƏNİŞ: UĞURLU",120,420);
+  ctx.fillStyle="#555"; ctx.font="12px Arial"; ctx.fillText("Bu qəbz sistem tərəfindən avtomatik yaradılmışdır.",55,470);
+}
 
-            const docRef = doc(db, "codes", code);
-            const snap = await getDoc(docRef);
+function downloadReceipt(){
+  const link = document.createElement('a');
+  link.download = 'neftgame-qebz.png';
+  link.href=document.getElementById('receiptCanvas').toDataURL();
+  link.click();
+}
 
-            if(snap.exists() && !snap.data().used) {
-                localStorage.setItem("current_code", code);
-                startLoading(() => showStep('step2'));
-            } else {
-                document.getElementById('error-msg').innerText = "Kod yanlışdır və ya işlənib!";
-            }
-        }
-
-        // Addım dəyişmə
-        function showStep(id) {
-            document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        // Loading Animasiyası
-        function startLoading(callback) {
-            showStep('step-loader');
-            let p = 0;
-            const bar = document.getElementById('bar-fill');
-            const interval = setInterval(() => {
-                p += 2;
-                bar.style.width = p + "%";
-                if(p >= 100) {
-                    clearInterval(interval);
-                    setTimeout(callback, 500);
-                }
-            }, 80); // 4-5 saniyə çəkir
-        }
-
-        // Sifariş
-        window.submitOrder = async function() {
-            const id = document.getElementById('pubg-id').value;
-            const code = localStorage.getItem("current_code");
-            if(id.length < 5) return alert("ID daxil edin!");
-            
-            await updateDoc(doc(db, "codes", code), { used: true, player: id });
-            startLoading(() => showStep('step3'));
-        }
-
-        // Admin Funksiyaları
-        window.toggleSystem = async function() {
-            await setDoc(doc(db, "settings", "global"), { active: !systemActive });
-        }
-        
-        window.addCode = async function() {
-            const code = document.getElementById('new-code').value.toUpperCase();
-            if(!code) return;
-            await setDoc(doc(db, "codes", code), { used: false });
-            alert("Kod əlavə edildi!");
-        }
-
-    </script>
+// INIT
+function initSystem(){ updateSystemStatus(); }
+</script>
 </body>
-</html>
+    </html>
