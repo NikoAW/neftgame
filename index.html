@@ -47,7 +47,7 @@
         .progress-bar { height: 10px; background: #222; border-radius: 5px; overflow: hidden; margin: 25px 0; }
         .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.4s; }
 
-        #receiptCanvas { width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid #333; }
+        #receiptCanvas { width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid #333; background: #000; }
     </style>
 </head>
 <body onload="initOperator()">
@@ -69,7 +69,7 @@
                     <option value="168">7 Günlük</option>
                     <option value="8760">Həmişəlik</option>
                 </select>
-                <button onclick="addNewCode()" style="width:100%; background:var(--success); border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer; margin-bottom:15px;">KODU AKTİVLƏŞDİR</button>
+                <button onclick="addNewCode()" style="width:100%; background:var(--success); border:none; padding:12px; border-radius:10px; font-weight:bold; cursor:pointer; margin-bottom:15px; color: black;">KODU AKTİVLƏŞDİR</button>
                 
                 <div id="codes-list" style="max-height: 300px; overflow-y: auto;">
                     </div>
@@ -154,6 +154,7 @@
                 return;
             }
 
+            if(!code) return;
             err.innerText = "Yoxlanılır...";
             try {
                 const docRef = doc(db, "codes", code.toUpperCase());
@@ -210,7 +211,7 @@
         }
 
         window.deleteCode = async function(id) {
-            if(confirm("Silinsin?")) { await deleteDoc(doc(db, "codes", id)); loadCodes(); }
+            if(confirm(id + " silinsin?")) { await deleteDoc(doc(db, "codes", id)); loadCodes(); }
         }
 
         // SİFARİŞ VƏ QƏBZ
@@ -302,7 +303,8 @@
             { k: ["salam", "necesen"], r: "Salam! Neft Game ailəsinə xoş gəldiniz. Mən yaxşıyam, sizə necə kömək edə bilərəm?" },
             { k: ["qiymet", "neceyedir", "uc"], r: "Qiymətlərimiz:\n660 UC - 5 AZN\n1920 UC - 13 AZN\n8100 UC - 35 AZN\nRoyal Pass - 6 AZN" },
             { k: ["kart", "odenis"], r: "💳 Kart: 4244 4848 4180 8581\nÖdəniş edib qəbzi WhatsApp-a göndərin." },
-            { k: ["kod", "aktivasiya"], r: "Aktivasiya kodu yalnız ödəniş təsdiqləndikdən sonra Admin tərəfindən verilir." }
+            { k: ["kod", "aktivasiya"], r: "Aktivasiya kodu yalnız ödəniş təsdiqləndikdən sonra Admin tərəfindən verilir." },
+            { k: ["niye ucuz", "niyə ucuz", "ucuz"], r: "Biz rəsmi kateqoriyalardan aldığımız UC-ləri Azərbaycan sektorunda güzəştli qiymətə təqdim edirik." }
         ];
 
         function sendMessage() {
