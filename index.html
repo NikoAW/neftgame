@@ -28,26 +28,29 @@
         
         .main-btn { width: 100%; padding: 16px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; margin-top: 10px; box-shadow: 0 4px 15px rgba(112, 0, 255, 0.3); }
         
-        /* Chat UI Yeniləmə */
+        /* Admin UI */
+        #admin-panel { display: none; margin-top: 20px; padding: 15px; background: #000; border-radius: 15px; border: 1px solid var(--primary); text-align: left; }
+        .code-card { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 11px; border-left: 4px solid var(--primary); position: relative; }
+        .delete-btn { position: absolute; right: 10px; top: 10px; color: var(--error); cursor: pointer; font-weight: bold; padding: 5px; }
+
+        /* Chatbot UI */
         #chat-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 999; flex-direction: column; }
         .chat-header { padding: 15px 20px; background: var(--card-bg); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* Sənin Bot Simvolun */
-        .bot-resim { width: 50px; height: 50px; border-radius: 12px; border: 1.5px solid var(--primary); object-fit: cover; transition: 0.3s; }
-        .bot-resim:hover { transform: scale(1.1); }
-
+        .bot-info { display: flex; align-items: center; gap: 12px; }
+        .bot-img { width: 45px; height: 45px; background: #1a1a1f; border-radius: 12px; padding: 5px; border: 1px solid var(--primary); }
         .chat-body { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .message { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 0.9rem; line-height: 1.4; }
         .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 4px; white-space: pre-wrap; }
         .user-msg { background: var(--chat-user); align-self: flex-end; border-bottom-right-radius: 4px; }
         
         .chat-cats { padding: 10px; display: flex; gap: 8px; overflow-x: auto; border-bottom: 1px solid #333; background: #1a1a1f; scrollbar-width: none; }
+        .chat-cats::-webkit-scrollbar { display: none; }
         .cat-btn { white-space:nowrap; background:#222; color:var(--primary); border:1px solid var(--primary); padding:6px 15px; border-radius:20px; font-size:12px; cursor:pointer; font-weight:bold; }
 
-        /* Digər Step Dizaynları */
         .step { display: none; } .step.active { display: block; }
         .progress-bar { height: 10px; background: #222; border-radius: 5px; overflow: hidden; margin: 25px 0; }
         .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.4s; }
+
         #receiptCanvas { width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid #333; background: #000; }
     </style>
 </head>
@@ -55,20 +58,25 @@
 
     <div class="container">
         <div id="step1" class="step active">
-            <div onclick="openChat()" style="cursor:pointer; margin-bottom:15px;">
-                <img src="dqbj1i3c9fuyomqnjkzh.png" alt="Bot" class="bot-resim">
-                <p style="color:var(--primary); font-size:10px; margin-top:5px; font-weight:bold;">BOT DƏSTƏK</p>
+            <div onclick="openChat()" style="cursor:pointer; display: inline-block; margin-bottom: 20px;">
+                <img width="48" height="48" src="https://img.icons8.com/fluency/48/chatbot--v1.png" alt="chatbot--v1"/>
+                <p style="color:var(--primary); font-size: 0.7rem; font-weight: bold;">BOT DƏSTƏK</p>
             </div>
             <h2>SİSTEMƏ GİRİŞ</h2>
             <input type="text" id="access-code" placeholder="Aktivasiya Kodunu Daxil Edin">
             <p id="error-msg" style="color:var(--error); font-size:0.8rem; min-height:20px; margin-top:5px;"></p>
             <button class="main-btn" onclick="verifyCode()">DAXİL OL</button>
+
+            <div id="admin-panel">
+                <h3 style="color:var(--primary); font-size:1rem; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">ADMİN PANELİ</h3>
+                <div id="codes-list" style="max-height: 300px; overflow-y: auto;"></div>
+            </div>
         </div>
 
         <div id="step-loader" class="step">
             <h2 id="loader-title">YOXLANILIR...</h2>
             <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-            <p id="loader-status" style="color:var(--primary); font-size:0.8rem;">Məlumatlar serverdən alınır</p>
+            <p id="loader-status" style="color:var(--primary); font-size:0.8rem;">Serverə bağlanılır...</p>
         </div>
 
         <div id="step2" class="step">
@@ -76,29 +84,33 @@
             <select id="packet-select">
                 <option value="660 UC (5 AZN)">660 UC • 5 AZN</option>
                 <option value="1920 UC (13 AZN)">1920 UC • 13 AZN</option>
+                <option value="3120 UC (21 AZN)">3120 UC • 21 AZN</option>
                 <option value="8100 UC (35 AZN)">8100 UC • 35 AZN</option>
+                <option value="Royale Pass Plus (6 AZN)">Royale Pass Plus • 6 AZN</option>
             </select>
             <input type="number" id="player-id" placeholder="PUBG Mobile ID">
-            <button class="main-btn" onclick="processOrder()">TƏSDİQLƏ</button>
+            <input type="text" id="phone-num" value="+994" placeholder="Əlaqə Nömrəsi">
+            <button class="main-btn" onclick="processOrder()">SİFARİŞİ TƏSDİQLƏ</button>
         </div>
 
         <div id="step3" class="step">
-            <h2 style="color:var(--success);">UĞURLUDUR!</h2>
+            <h2 style="color:var(--success);">SİFARİŞ UĞURLUDUR!</h2>
             <canvas id="receiptCanvas" width="400" height="500"></canvas>
-            <button class="main-btn" onclick="downloadReceipt()">YÜKLƏ (.PNG)</button>
+            <button class="main-btn" onclick="downloadReceipt()">QƏBZİ YÜKLƏ (.PNG)</button>
+            <button class="main-btn" onclick="location.reload()" style="background:#333; margin-top:10px;">YENİ SİFARİŞ</button>
         </div>
     </div>
 
     <div id="chat-overlay">
         <div class="chat-header">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img src="dqbj1i3c9fuyomqnjkzh.png" class="bot-resim" style="width:40px; height:40px;">
+            <div class="bot-info">
+                <img class="bot-img" src="https://img.icons8.com/fluency/48/chatbot--v1.png" alt="chatbot"/>
                 <div>
-                    <span style="font-weight:bold; display:block; color:var(--primary);">NEFT BOT v1.0</span>
-                    <small style="color:var(--success)">● Aktiv/Avtomatik</small>
+                    <span style="font-weight:bold; display:block; color: var(--primary);">NEFT BOT</span>
+                    <small style="color:var(--success)">● Avtomatik Cavab</small>
                 </div>
             </div>
-            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
+            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:2.5rem; cursor:pointer;">&times;</button>
         </div>
         
         <div class="chat-cats">
@@ -108,9 +120,9 @@
         </div>
 
         <div class="chat-body" id="chat-body">
-            <div class="message bot-msg">Salam! Mən Neft Game-in rəsmi botuyam. Sizə avtomatik xidmət göstərirəm. Necə kömək edə bilərəm?</div>
+            <div class="message bot-msg">Salam! Mən Neft Game-in rəsmi chatbotuyam. Sizə necə kömək edə bilərəm? 🤖</div>
         </div>
-        <div id="typing" style="padding:0 20px 10px; font-size:0.8rem; color:var(--primary); display:none;">Bot cavab yazır...</div>
+        <div id="typing" style="padding:0 20px 10px; font-size:0.8rem; color:var(--primary); display:none;">Bot yazır...</div>
         <div style="padding:20px; display:flex; gap:10px; background:var(--card-bg)">
             <input type="text" id="chat-input" placeholder="Sualınızı bura yazın..." style="margin:0" onkeypress="if(event.key==='Enter') sendMessage()">
             <button onclick="sendMessage()" style="background:var(--primary); border:none; padding:0 20px; border-radius:12px; font-weight:bold; color:black;">></button>
@@ -118,9 +130,8 @@
     </div>
 
     <script type="module">
-        // Firebase və digər məntiq dəyişilmədi, olduğu kimi qaldı
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCOq7UqFo6Y9ldVXRthRP6U02TayFkv53I",
@@ -130,6 +141,7 @@
             messagingSenderId: "27529172910",
             appId: "1:27529172910:web:1a2a752e79295d47c39a3f"
         };
+
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         let activeCode = "";
@@ -137,6 +149,7 @@
         window.verifyCode = async function() {
             const code = document.getElementById('access-code').value.trim();
             const err = document.getElementById('error-msg');
+            if(code === "Admin2026") { document.getElementById('admin-panel').style.display = 'block'; loadCodes(); return; }
             if(!code) return;
             err.innerText = "Yoxlanılır...";
             try {
@@ -160,34 +173,20 @@
     </script>
 
     <script>
-        // UI və Chatbot Məntiqi
         function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
         function runLoader(cb) { showStep('step-loader'); let p = 0; let iv = setInterval(() => { p += 20; document.getElementById('progress-fill').style.width = p + "%"; if(p >= 100) { clearInterval(iv); cb(); } }, 300); }
 
         function openChat() { document.getElementById('chat-overlay').style.display='flex'; }
         function closeChat() { document.getElementById('chat-overlay').style.display='none'; }
 
+        // --- CHATBOT MƏNTİQİ ---
         const botQA = [
-            { k: ["salam", "sa", "as"], r: "Salam! Mən Neft Game Botuyam. Qiymətlər və ya ödəniş haqqında məlumat istəyirsiniz?" },
-            { k: ["qiymet", "uc", "neçəyə"], r: "💎 Qiymətlərimiz:\n- 660 UC: 5 AZN\n- 1920 UC: 13 AZN\n- 8100 UC: 35 AZN\nÇox ucuz və tam güvənli!" },
-            { k: ["kart", "odenis", "m10"], r: "💳 Ödəniş: 4244 4848 4180 8581 nömrəli karta ödəniş edib, qəbzi WhatsApp Adminə göndərin." },
-            { k: ["guven", "ban"], r: "🛡️ Sistemimiz rəsmi Midasbuy tərəfdaşlığı ilə işləyir. Hesabınız 100% güvəndədir." }
+            { k: ["salam", "sa", "necesen"], r: "Salam! Mən Neft Game-in avtomatik botuyam. Sizə qiymətlər, ödəniş və güvənlik haqqında məlumat verə bilərəm. 🤖" },
+            { k: ["qiymet", "neceyedir", "uc", "paket"], r: "💎 Güncəl Qiymətlər:\n- 660 UC: 5 AZN\n- 1920 UC: 13 AZN\n- 8100 UC: 35 AZN\n- RP Plus: 6 AZN" },
+            { k: ["kart", "odenis", "m10"], r: "💳 Ödəniş Məlumatı:\nKart: **4244 4848 4180 8581**\nÖdənişdən sonra qəbzi WhatsApp-a göndərin." },
+            { k: ["guven", "ban", "risk"], r: "🛡️ Narahat olmayın, UC-lər rəsmi Midasbuy vasitəsilə yüklənir. Hesabınız tam güvəndədir!" },
+            { k: ["admin", "wp", "nomre"], r: "📱 WhatsApp Dəstək: +994 77 124 49 44" }
         ];
-
-        function sendMessage() {
-            const inp = document.getElementById('chat-input');
-            const txt = inp.value.trim().toLowerCase();
-            if(!txt) return;
-            addMsg(inp.value, 'user-msg');
-            inp.value = "";
-            document.getElementById('typing').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('typing').style.display = 'none';
-                let res = "Bunu başa düşmədim, zəhmət olmasa yuxarıdakı kateqoriyalardan seçin.";
-                botQA.forEach(item => { if(item.k.some(key => txt.includes(key))) res = item.r; });
-                addMsg(res, 'bot-msg');
-            }, 1000);
-        }
 
         function quickAsk(cat) {
             addMsg(cat, 'user-msg');
@@ -202,6 +201,21 @@
             }, 800);
         }
 
+        function sendMessage() {
+            const inp = document.getElementById('chat-input');
+            const txt = inp.value.trim().toLowerCase();
+            if(!txt) return;
+            addMsg(inp.value, 'user-msg');
+            inp.value = "";
+            document.getElementById('typing').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('typing').style.display = 'none';
+                let res = "Anlamadım. Zəhmət olmasa yuxarıdakı düymələrdən istifadə edin və ya Adminə yazın: +994 77 124 49 44";
+                for(let item of botQA) { if(item.k.some(key => txt.includes(key))) { res = item.r; break; } }
+                addMsg(res, 'bot-msg');
+            }, 1000);
+        }
+
         function addMsg(t, c) {
             const d = document.createElement('div'); d.className = `message ${c}`; d.innerText = t;
             const b = document.getElementById('chat-body'); b.appendChild(d); b.scrollTop = b.scrollHeight;
@@ -213,12 +227,13 @@
             ctx.fillStyle = "#111"; ctx.fillRect(0,0,400,500);
             ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,500);
             ctx.fillStyle = "#00f2ff"; ctx.font = "bold 24px Arial"; ctx.fillText("NEFT GAME SHOP", 90, 60);
-            ctx.fillStyle = "#fff"; ctx.font = "16px Arial";
+            ctx.fillStyle = "#fff"; ctx.font = "16px Courier New";
             ctx.fillText("OYUNÇU ID: " + id, 40, 200); ctx.fillText("MƏHSUL: " + pack, 40, 240);
-            ctx.fillStyle = "#00ff88"; ctx.fillText("STATUS: UĞURLU", 130, 400);
+            ctx.fillStyle = "#00ff88"; ctx.fillText("ÖDƏNİŞ: UĞURLU", 120, 400);
         }
 
         function downloadReceipt() { const link = document.createElement('a'); link.download = 'qebz.png'; link.href = document.getElementById('receiptCanvas').toDataURL(); link.click(); }
     </script>
 </body>
-</html>
+        </html>
+        
