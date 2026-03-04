@@ -28,29 +28,24 @@
         
         .main-btn { width: 100%; padding: 16px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; margin-top: 10px; box-shadow: 0 4px 15px rgba(112, 0, 255, 0.3); }
         
-        /* Admin UI */
-        #admin-panel { display: none; margin-top: 20px; padding: 15px; background: #000; border-radius: 15px; border: 1px solid var(--primary); text-align: left; }
-        .code-card { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 11px; border-left: 4px solid var(--primary); position: relative; }
-        .delete-btn { position: absolute; right: 10px; top: 10px; color: var(--error); cursor: pointer; font-weight: bold; padding: 5px; }
+        /* ADMIN PANEL STYLE */
+        #admin-panel { display: none; margin-top: 20px; padding: 15px; background: #000; border-radius: 15px; border: 2px solid var(--primary); text-align: left; }
+        .admin-header { color: var(--primary); font-size: 1.1rem; font-weight: bold; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; }
+        .code-card { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 12px; border-left: 4px solid var(--primary); position: relative; }
+        .code-card.used { border-left-color: var(--error); }
+        .delete-btn { position: absolute; right: 10px; top: 10px; color: var(--error); cursor: pointer; font-weight: bold; background: rgba(255,0,0,0.1); padding: 4px 8px; border-radius: 5px; }
 
-        /* Chatbot UI */
+        /* Diğer UI elementleri */
         #chat-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 999; flex-direction: column; }
         .chat-header { padding: 15px 20px; background: var(--card-bg); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .bot-info { display: flex; align-items: center; gap: 12px; }
-        .bot-img { width: 45px; height: 45px; background: #1a1a1f; border-radius: 12px; padding: 5px; border: 1px solid var(--primary); }
         .chat-body { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         .message { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 0.9rem; line-height: 1.4; }
         .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 4px; white-space: pre-wrap; }
         .user-msg { background: var(--chat-user); align-self: flex-end; border-bottom-right-radius: 4px; }
         
-        .chat-cats { padding: 10px; display: flex; gap: 8px; overflow-x: auto; border-bottom: 1px solid #333; background: #1a1a1f; scrollbar-width: none; }
-        .chat-cats::-webkit-scrollbar { display: none; }
-        .cat-btn { white-space:nowrap; background:#222; color:var(--primary); border:1px solid var(--primary); padding:6px 15px; border-radius:20px; font-size:12px; cursor:pointer; font-weight:bold; }
-
         .step { display: none; } .step.active { display: block; }
         .progress-bar { height: 10px; background: #222; border-radius: 5px; overflow: hidden; margin: 25px 0; }
         .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.4s; }
-
         #receiptCanvas { width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid #333; background: #000; }
     </style>
 </head>
@@ -68,15 +63,22 @@
             <button class="main-btn" onclick="verifyCode()">DAXİL OL</button>
 
             <div id="admin-panel">
-                <h3 style="color:var(--primary); font-size:1rem; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">ADMİN PANELİ</h3>
-                <div id="codes-list" style="max-height: 300px; overflow-y: auto;"></div>
+                <div class="admin-header">
+                    <span>ADMİN STRATEJİ</span>
+                    <span onclick="location.reload()" style="cursor:pointer; font-size:0.8rem;">[X]</span>
+                </div>
+                <input type="text" id="new-code-input" placeholder="YENİ KOD YARAT (Məs: NEFT-77)">
+                <button onclick="addNewCode()" style="width:100%; background:var(--success); color:black; padding:10px; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">KODU AKTİVLƏŞDİR</button>
+                
+                <h4 style="margin: 15px 0 10px; font-size: 0.8rem; color: #888;">MÖVCUD KODLAR VƏ STATUSLAR:</h4>
+                <div id="codes-list" style="max-height: 250px; overflow-y: auto;">
+                    </div>
             </div>
         </div>
 
         <div id="step-loader" class="step">
-            <h2 id="loader-title">YOXLANILIR...</h2>
+            <h2 id="loader-title">Yoxlanılır...</h2>
             <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-            <p id="loader-status" style="color:var(--primary); font-size:0.8rem;">Serverə bağlanılır...</p>
         </div>
 
         <div id="step2" class="step">
@@ -84,48 +86,34 @@
             <select id="packet-select">
                 <option value="660 UC (5 AZN)">660 UC • 5 AZN</option>
                 <option value="1920 UC (13 AZN)">1920 UC • 13 AZN</option>
-                <option value="3120 UC (21 AZN)">3120 UC • 21 AZN</option>
                 <option value="8100 UC (35 AZN)">8100 UC • 35 AZN</option>
-                <option value="Royale Pass Plus (6 AZN)">Royale Pass Plus • 6 AZN</option>
             </select>
             <input type="number" id="player-id" placeholder="PUBG Mobile ID">
-            <input type="text" id="phone-num" value="+994" placeholder="Əlaqə Nömrəsi">
-            <button class="main-btn" onclick="processOrder()">SİFARİŞİ TƏSDİQLƏ</button>
+            <button class="main-btn" onclick="processOrder()">TƏSDİQLƏ</button>
         </div>
 
         <div id="step3" class="step">
-            <h2 style="color:var(--success);">SİFARİŞ UĞURLUDUR!</h2>
+            <h2 style="color:var(--success);">UĞURLUDUR!</h2>
             <canvas id="receiptCanvas" width="400" height="500"></canvas>
-            <button class="main-btn" onclick="downloadReceipt()">QƏBZİ YÜKLƏ (.PNG)</button>
-            <button class="main-btn" onclick="location.reload()" style="background:#333; margin-top:10px;">YENİ SİFARİŞ</button>
+            <button class="main-btn" onclick="downloadReceipt()">PNG OLARAQ YÜKLƏ</button>
+            <button class="main-btn" onclick="location.reload()" style="background:#333;">GERİ</button>
         </div>
     </div>
 
     <div id="chat-overlay">
         <div class="chat-header">
-            <div class="bot-info">
-                <img class="bot-img" src="https://img.icons8.com/fluency/48/chatbot--v1.png" alt="chatbot"/>
-                <div>
-                    <span style="font-weight:bold; display:block; color: var(--primary);">NEFT BOT</span>
-                    <small style="color:var(--success)">● Avtomatik Cavab</small>
-                </div>
+            <div style="display:flex; align-items:center; gap:10px;">
+                <img src="https://img.icons8.com/fluency/48/chatbot--v1.png" width="40">
+                <span style="font-weight:bold; color:var(--primary);">NEFT BOT</span>
             </div>
-            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:2.5rem; cursor:pointer;">&times;</button>
+            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:2rem;">&times;</button>
         </div>
-        
-        <div class="chat-cats">
-            <button class="cat-btn" onclick="quickAsk('Qiymətlər')">💎 Qiymətlər</button>
-            <button class="cat-btn" onclick="quickAsk('Ödəniş')">💳 Ödəniş</button>
-            <button class="cat-btn" onclick="quickAsk('Güvənlik')">🛡️ Güvənlik</button>
-        </div>
-
         <div class="chat-body" id="chat-body">
-            <div class="message bot-msg">Salam! Mən Neft Game-in rəsmi chatbotuyam. Sizə necə kömək edə bilərəm? 🤖</div>
+            <div class="message bot-msg">Salam! Mən Neft Game botuyam. Sualınız var?</div>
         </div>
-        <div id="typing" style="padding:0 20px 10px; font-size:0.8rem; color:var(--primary); display:none;">Bot yazır...</div>
-        <div style="padding:20px; display:flex; gap:10px; background:var(--card-bg)">
-            <input type="text" id="chat-input" placeholder="Sualınızı bura yazın..." style="margin:0" onkeypress="if(event.key==='Enter') sendMessage()">
-            <button onclick="sendMessage()" style="background:var(--primary); border:none; padding:0 20px; border-radius:12px; font-weight:bold; color:black;">></button>
+        <div style="padding:20px; display:flex; gap:10px;">
+            <input type="text" id="chat-input" placeholder="Yazın..." style="margin:0">
+            <button onclick="sendMessage()" style="background:var(--primary); border:none; padding:0 15px; border-radius:10px;">></button>
         </div>
     </div>
 
@@ -146,94 +134,121 @@
         const db = getFirestore(app);
         let activeCode = "";
 
+        // KODU YOXLAMAQ
         window.verifyCode = async function() {
-            const code = document.getElementById('access-code').value.trim();
-            const err = document.getElementById('error-msg');
-            if(code === "Admin2026") { document.getElementById('admin-panel').style.display = 'block'; loadCodes(); return; }
+            const code = document.getElementById('access-code').value.trim().toUpperCase();
+            if(code === "ADMIN2026") { 
+                document.getElementById('admin-panel').style.display = 'block'; 
+                loadCodes(); 
+                return; 
+            }
             if(!code) return;
+            
+            const err = document.getElementById('error-msg');
             err.innerText = "Yoxlanılır...";
+            
             try {
-                const docRef = doc(db, "codes", code.toUpperCase());
+                const docRef = doc(db, "codes", code);
                 const snap = await getDoc(docRef);
                 if(snap.exists()) {
-                    const d = snap.data();
-                    if(d.used) err.innerText = "Bu kod artıq işlənib!";
-                    else { activeCode = code.toUpperCase(); runLoader(() => showStep('step2')); }
-                } else { err.innerText = "Kod tapılmadı!"; }
-            } catch(e) { err.innerText = "Bağlantı xətası!"; }
+                    if(snap.data().used) {
+                        err.innerText = "Bu kod artıq işlənib!";
+                    } else {
+                        activeCode = code;
+                        runLoader(() => showStep('step2'));
+                    }
+                } else {
+                    err.innerText = "Kod yanlışdır!";
+                }
+            } catch(e) { err.innerText = "Xəta baş verdi!"; }
         }
 
+        // ADMİN: KODLARI YÜKLƏMƏK
+        async function loadCodes() {
+            const list = document.getElementById('codes-list');
+            list.innerHTML = "Yüklenir...";
+            const snap = await getDocs(collection(db, "codes"));
+            list.innerHTML = "";
+            snap.forEach(d => {
+                const data = d.data();
+                const div = document.createElement('div');
+                div.className = `code-card ${data.used ? 'used' : ''}`;
+                div.innerHTML = `
+                    <span class="delete-btn" onclick="deleteCode('${d.id}')">SİL</span>
+                    <strong>KOD: ${d.id}</strong><br>
+                    Status: ${data.used ? '❌ İşlənib (ID: '+data.usedBy+')' : '✅ Aktiv'}
+                `;
+                list.appendChild(div);
+            });
+        }
+
+        // ADMİN: YENİ KOD ƏLAVƏ ETMƏK
+        window.addNewCode = async function() {
+            const val = document.getElementById('new-code-input').value.trim().toUpperCase();
+            if(!val) return;
+            await setDoc(doc(db, "codes", val), { used: false, usedBy: null, createdAt: new Date().getTime() });
+            document.getElementById('new-code-input').value = "";
+            loadCodes();
+        }
+
+        // ADMİN: KODU SİLMƏK
+        window.deleteCode = async function(id) {
+            if(confirm(id + " silinsin?")) {
+                await deleteDoc(doc(db, "codes", id));
+                loadCodes();
+            }
+        }
+
+        // SİFARİŞİ TAMAMLAMAQ
         window.processOrder = async function() {
             const pid = document.getElementById('player-id').value;
             const pack = document.getElementById('packet-select').value;
-            if(pid.length < 5) return alert("ID Yanlışdır!");
-            await updateDoc(doc(db, "codes", activeCode), { used: true, usedBy: pid, usedAt: new Date().toLocaleString(), packet: pack });
+            if(pid.length < 5) return alert("ID-ni düzgün yazın!");
+            
+            await updateDoc(doc(db, "codes", activeCode), { 
+                used: true, 
+                usedBy: pid, 
+                packet: pack,
+                usedAt: new Date().toLocaleString() 
+            });
+            
             runLoader(() => { generateReceipt(pid, pack); showStep('step3'); });
         }
     </script>
 
     <script>
+        // UI FUNKSİYALARI
         function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
         function runLoader(cb) { showStep('step-loader'); let p = 0; let iv = setInterval(() => { p += 20; document.getElementById('progress-fill').style.width = p + "%"; if(p >= 100) { clearInterval(iv); cb(); } }, 300); }
-
         function openChat() { document.getElementById('chat-overlay').style.display='flex'; }
         function closeChat() { document.getElementById('chat-overlay').style.display='none'; }
-
-        // --- CHATBOT MƏNTİQİ ---
-        const botQA = [
-            { k: ["salam", "sa", "necesen"], r: "Salam! Mən Neft Game-in avtomatik botuyam. Sizə qiymətlər, ödəniş və güvənlik haqqında məlumat verə bilərəm. 🤖" },
-            { k: ["qiymet", "neceyedir", "uc", "paket"], r: "💎 Güncəl Qiymətlər:\n- 660 UC: 5 AZN\n- 1920 UC: 13 AZN\n- 8100 UC: 35 AZN\n- RP Plus: 6 AZN" },
-            { k: ["kart", "odenis", "m10"], r: "💳 Ödəniş Məlumatı:\nKart: **4244 4848 4180 8581**\nÖdənişdən sonra qəbzi WhatsApp-a göndərin." },
-            { k: ["guven", "ban", "risk"], r: "🛡️ Narahat olmayın, UC-lər rəsmi Midasbuy vasitəsilə yüklənir. Hesabınız tam güvəndədir!" },
-            { k: ["admin", "wp", "nomre"], r: "📱 WhatsApp Dəstək: +994 77 124 49 44" }
-        ];
-
-        function quickAsk(cat) {
-            addMsg(cat, 'user-msg');
-            document.getElementById('typing').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('typing').style.display = 'none';
-                let res = "";
-                if(cat === 'Qiymətlər') res = botQA[1].r;
-                else if(cat === 'Ödəniş') res = botQA[2].r;
-                else if(cat === 'Güvənlik') res = botQA[3].r;
-                addMsg(res, 'bot-msg');
-            }, 800);
-        }
-
-        function sendMessage() {
-            const inp = document.getElementById('chat-input');
-            const txt = inp.value.trim().toLowerCase();
-            if(!txt) return;
-            addMsg(inp.value, 'user-msg');
-            inp.value = "";
-            document.getElementById('typing').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('typing').style.display = 'none';
-                let res = "Anlamadım. Zəhmət olmasa yuxarıdakı düymələrdən istifadə edin və ya Adminə yazın: +994 77 124 49 44";
-                for(let item of botQA) { if(item.k.some(key => txt.includes(key))) { res = item.r; break; } }
-                addMsg(res, 'bot-msg');
-            }, 1000);
-        }
-
-        function addMsg(t, c) {
-            const d = document.createElement('div'); d.className = `message ${c}`; d.innerText = t;
-            const b = document.getElementById('chat-body'); b.appendChild(d); b.scrollTop = b.scrollHeight;
-        }
 
         function generateReceipt(id, pack) {
             const canvas = document.getElementById('receiptCanvas');
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = "#111"; ctx.fillRect(0,0,400,500);
+            ctx.fillStyle = "#0f0f12"; ctx.fillRect(0,0,400,500);
             ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,500);
-            ctx.fillStyle = "#00f2ff"; ctx.font = "bold 24px Arial"; ctx.fillText("NEFT GAME SHOP", 90, 60);
-            ctx.fillStyle = "#fff"; ctx.font = "16px Courier New";
-            ctx.fillText("OYUNÇU ID: " + id, 40, 200); ctx.fillText("MƏHSUL: " + pack, 40, 240);
-            ctx.fillStyle = "#00ff88"; ctx.fillText("ÖDƏNİŞ: UĞURLU", 120, 400);
+            ctx.fillStyle = "#00f2ff"; ctx.font = "bold 26px Arial"; ctx.fillText("NEFT GAME SHOP", 85, 60);
+            ctx.fillStyle = "#fff"; ctx.font = "18px Courier New";
+            ctx.fillText("--------------------------", 40, 120);
+            ctx.fillText("OYUNÇU ID: " + id, 40, 180);
+            ctx.fillText("MƏHSUL: " + pack, 40, 220);
+            ctx.fillText("TARİX: " + new Date().toLocaleDateString(), 40, 260);
+            ctx.fillText("--------------------------", 40, 320);
+            ctx.fillStyle = "#00ff88"; ctx.font = "bold 22px Arial";
+            ctx.fillText("ÖDƏNİŞ TƏSDİQLƏNDİ", 90, 420);
         }
 
-        function downloadReceipt() { const link = document.createElement('a'); link.download = 'qebz.png'; link.href = document.getElementById('receiptCanvas').toDataURL(); link.click(); }
+        function downloadReceipt() { const link = document.createElement('a'); link.download = 'neft_game_qebz.png'; link.href = document.getElementById('receiptCanvas').toDataURL(); link.click(); }
+        
+        function sendMessage() {
+            const inp = document.getElementById('chat-input');
+            if(!inp.value) return;
+            const b = document.getElementById('chat-body');
+            b.innerHTML += `<div class="message user-msg">${inp.value}</div>`;
+            setTimeout(() => { b.innerHTML += `<div class="message bot-msg">Sifarişiniz və ya kodunuzla bağlı problem varsa, zəhmət olmasa WhatsApp adminlə əlaqə saxlayın: +994 77 124 49 44</div>`; b.scrollTop = b.scrollHeight; }, 1000);
+            inp.value = "";
+        }
     </script>
 </body>
-        </html>
-        
+</html>
