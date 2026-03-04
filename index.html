@@ -3,47 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neft Game - Professional Admin v4.8</title>
+    <title>Neft Game - System v5.0</title>
     <style>
         :root {
-            --primary: #00f2ff;
-            --secondary: #7000ff;
-            --bg: #0a0a0c;
-            --card-bg: #16161a;
-            --text: #ffffff;
-            --error: #ff4d4d;
-            --success: #00ff88;
-            --chat-bot: #25252b;
-            --chat-user: #7000ff;
+            --primary: #00f2ff; --secondary: #7000ff; --bg: #0a0a0c;
+            --card-bg: #16161a; --text: #ffffff; --error: #ff4d4d;
+            --success: #00ff88; --chat-bot: #25252b; --chat-user: #7000ff;
         }
-
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
-
         .container { width: 95%; max-width: 450px; background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
-        
-        h2 { color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; font-size: 1.4rem; }
+        h2 { color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; font-size: 1.2rem; }
         input, select { width: 100%; padding: 14px; margin: 10px 0; background: #222; border: 1px solid #333; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
+        .main-btn { width: 100%; padding: 16px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; margin-top: 10px; }
         
-        .main-btn { width: 100%; padding: 16px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; margin-top: 10px; box-shadow: 0 4px 15px rgba(112, 0, 255, 0.3); }
-        
-        /* ADMIN PANEL YENİLİKLƏR */
+        /* ADMIN & SEARCH UI */
         #admin-panel { display: none; margin-top: 20px; padding: 15px; background: #000; border-radius: 15px; border: 2px solid var(--primary); text-align: left; }
-        .admin-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .stat-box { background: #111; padding: 10px; border-radius: 10px; text-align: center; border: 1px solid #222; }
-        .stat-box span { display: block; font-size: 0.7rem; color: #888; }
-        .stat-box b { font-size: 1.1rem; color: var(--primary); }
-
+        .search-box { background: #111; padding: 15px; border-radius: 10px; border: 1px dashed var(--primary); margin-top: 15px; }
         .code-card { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 11px; border-left: 4px solid var(--primary); position: relative; }
-        .code-card.used { border-left-color: var(--error); opacity: 0.8; }
-        .code-card.expired { border-left-color: #555; }
-        .delete-btn { position: absolute; right: 10px; top: 10px; color: var(--error); cursor: pointer; font-weight: bold; }
-
-        /* Diğer elementler */
+        .code-card.used { border-left-color: var(--error); }
+        
+        /* CHAT UI */
         #chat-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 999; flex-direction: column; }
         .chat-header { padding: 15px 20px; background: var(--card-bg); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .chat-body { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .chat-body { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
         .message { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 0.9rem; line-height: 1.4; }
         .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 4px; white-space: pre-wrap; }
         .user-msg { background: var(--chat-user); align-self: flex-end; border-bottom-right-radius: 4px; }
@@ -51,56 +34,45 @@
         .step { display: none; } .step.active { display: block; }
         .progress-bar { height: 10px; background: #222; border-radius: 5px; overflow: hidden; margin: 25px 0; }
         .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.4s; }
-        #receiptCanvas { width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid #333; background: #000; }
+        #receiptCanvas { width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
     <div class="container">
         <div id="step1" class="step active">
-            <div onclick="openChat()" style="cursor:pointer; display: inline-block; margin-bottom: 20px;">
-                <img width="48" height="48" src="https://img.icons8.com/fluency/48/chatbot--v1.png" alt="chatbot--v1"/>
-                <p style="color:var(--primary); font-size: 0.7rem; font-weight: bold;">BOT DƏSTƏK</p>
+            <div onclick="openChat()" style="cursor:pointer; margin-bottom: 15px;">
+                <img width="48" height="48" src="https://img.icons8.com/fluency/48/chatbot--v1.png" alt="bot"/>
+                <p style="color:var(--primary); font-size: 0.7rem; font-weight: bold;">NEFT BOT DƏSTƏK</p>
             </div>
             <h2>SİSTEMƏ GİRİŞ</h2>
             <input type="text" id="access-code" placeholder="Aktivasiya Kodunu Daxil Edin">
-            <p id="error-msg" style="color:var(--error); font-size:0.8rem; min-height:20px; margin-top:5px;"></p>
+            <p id="error-msg" style="color:var(--error); font-size:0.8rem; min-height:20px;"></p>
             <button class="main-btn" onclick="verifyCode()">DAXİL OL</button>
 
             <div id="admin-panel">
-                <div style="display: flex; justify-content: space-between; color: var(--primary); font-weight: bold; margin-bottom: 15px; border-bottom: 1px solid #222; padding-bottom: 10px;">
-                    <span>📊 STRATEJİ PANEL</span>
+                <div style="display:flex; justify-content:space-between; color:var(--primary); margin-bottom:15px; font-weight:bold;">
+                    <span>📊 ADMİN STRATEJİ</span>
                     <span onclick="location.reload()" style="cursor:pointer;">[X]</span>
                 </div>
 
-                <div class="admin-stats">
-                    <div class="stat-box"><span>ÜMUMİ QAZANC</span><b id="total-revenue">0 AZN</b></div>
-                    <div class="stat-box"><span>AKTİV KODLAR</span><b id="active-count">0</b></div>
+                <div class="search-box">
+                    <small style="color:var(--primary);">🔍 QƏBZ AXTAR (NFT-XXXXXX)</small>
+                    <input type="text" id="search-receipt-id" placeholder="Qəbz kodunu yazın..." style="padding:8px; font-size:12px;">
+                    <button onclick="searchReceipt()" style="width:100%; background:var(--primary); border:none; padding:8px; border-radius:8px; font-weight:bold; cursor:pointer; color:black;">AXTAR</button>
+                    <div id="search-result" style="margin-top:10px; font-size:11px; color:var(--success); line-height:1.6;"></div>
                 </div>
 
-                <input type="text" id="new-code-input" placeholder="KOD ADI (Məs: VIP-100)">
-                <select id="expiry-hours">
-                    <option value="0">Müddətsiz (Həmişəlik)</option>
-                    <option value="1">1 Saatlıq</option>
-                    <option value="24">24 Saatlıq</option>
-                    <option value="168">7 Günlük</option>
-                </select>
-                <button onclick="addNewCode()" style="width:100%; background:var(--success); color:black; padding:12px; border:none; border-radius:10px; font-weight:bold; cursor:pointer;">KODU AKTİVLƏŞDİR</button>
-                
-                <h4 style="margin: 15px 0 10px; font-size: 0.8rem; color: #888; display: flex; justify-content: space-between;">
-                    MÖVCUD BAZA <span onclick="clearUsed()" style="color:var(--error); cursor:pointer;">[İşlənmişləri təmizlə]</span>
-                </h4>
-                <div id="codes-list" style="max-height: 200px; overflow-y: auto;"></div>
+                <div style="margin-top:15px;">
+                    <input type="text" id="new-code-input" placeholder="Yeni kod adı">
+                    <button onclick="addNewCode()" style="width:100%; background:var(--success); border:none; padding:10px; border-radius:10px; font-weight:bold;">KOD ƏLAVƏ ET</button>
+                </div>
+                <div id="codes-list" style="max-height: 150px; overflow-y: auto; margin-top:15px;"></div>
             </div>
         </div>
 
-        <div id="step-loader" class="step">
-            <h2 id="loader-title">YOXLANILIR...</h2>
-            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-        </div>
-
         <div id="step2" class="step">
-            <h2>SİFARİŞ MƏLUMATI</h2>
+            <h2>SİFARİŞ</h2>
             <select id="packet-select">
                 <option value="660 UC (5 AZN)">660 UC • 5 AZN</option>
                 <option value="1920 UC (13 AZN)">1920 UC • 13 AZN</option>
@@ -112,9 +84,14 @@
 
         <div id="step3" class="step">
             <h2 style="color:var(--success);">UĞURLUDUR!</h2>
-            <canvas id="receiptCanvas" width="400" height="500"></canvas>
+            <canvas id="receiptCanvas" width="400" height="550"></canvas>
             <button class="main-btn" onclick="downloadReceipt()">QƏBZİ YÜKLƏ (.PNG)</button>
-            <button class="main-btn" onclick="location.reload()" style="background:#333; margin-top:10px;">YENİ SİFARİŞ</button>
+            <button class="main-btn" onclick="location.reload()" style="background:#333; margin-top:10px;">ANA SƏHİFƏ</button>
+        </div>
+
+        <div id="step-loader" class="step">
+            <h2 id="loader-title">İŞLƏNİLİR...</h2>
+            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
         </div>
     </div>
 
@@ -122,16 +99,16 @@
         <div class="chat-header">
             <div style="display:flex; align-items:center; gap:10px;">
                 <img src="https://img.icons8.com/fluency/48/chatbot--v1.png" width="35">
-                <span style="font-weight:bold; color:var(--primary);">NEFT BOT</span>
+                <span style="font-weight:bold; color:var(--primary);">NEFT BOT v5.0</span>
             </div>
             <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
         </div>
         <div class="chat-body" id="chat-body">
-            <div class="message bot-msg">Salam! Mən Neft Game botuyam. Sualınız var?</div>
+            <div class="message bot-msg">Salam! Mən Neft Game-in süni intellekt botuyam. Sizə necə kömək edə bilərəm? 🤖</div>
         </div>
-        <div style="padding:20px; display:flex; gap:10px;">
-            <input type="text" id="chat-input" placeholder="Bura yazın..." style="margin:0">
-            <button onclick="sendMessage()" style="background:var(--primary); border:none; padding:0 15px; border-radius:10px;">></button>
+        <div style="padding:20px; display:flex; gap:10px; background:var(--card-bg);">
+            <input type="text" id="chat-input" placeholder="Sualınızı yazın..." style="margin:0">
+            <button onclick="sendMessage()" style="background:var(--primary); color:black; border:none; padding:0 20px; border-radius:12px; font-weight:bold;">></button>
         </div>
     </div>
 
@@ -147,139 +124,137 @@
             messagingSenderId: "27529172910",
             appId: "1:27529172910:web:1a2a752e79295d47c39a3f"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-        let activeCode = "";
+        let activeCode = ""; let lastReceipt = "";
 
-        // IP VƏ CİHAZ MƏLUMATINI ALMAQ
-        async function getVisitorInfo() {
-            try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                return { ip: data.ip, device: navigator.userAgent.split(') ')[0].split('(')[1] };
-            } catch { return { ip: "Gizli", device: "Naməlum" }; }
+        // UNİKAL QƏBZ KODU YARATMAQ
+        function generateReceiptID() {
+            const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+            let res = "NFT-";
+            for(let i=0; i<8; i++) res += chars.charAt(Math.floor(Math.random()*chars.length));
+            return res;
+        }
+
+        async function getIP() { 
+            try { return (await (await fetch('https://api.ipify.org?format=json')).json()).ip; } 
+            catch { return "Gizli"; }
         }
 
         window.verifyCode = async function() {
             const code = document.getElementById('access-code').value.trim().toUpperCase();
             if(code === "ADMIN2026") { document.getElementById('admin-panel').style.display = 'block'; loadCodes(); return; }
-            if(!code) return;
-            
-            const err = document.getElementById('error-msg');
-            err.innerText = "Yoxlanılır...";
-            
-            try {
-                const docRef = doc(db, "codes", code);
-                const snap = await getDoc(docRef);
-                if(snap.exists()) {
-                    const data = snap.data();
-                    const now = new Date().getTime();
-                    if(data.used) err.innerText = "Bu kod artıq işlənib!";
-                    else if(data.expiry && now > data.expiry) err.innerText = "Kodun vaxtı bitib!";
-                    else { activeCode = code; runLoader(() => showStep('step2')); }
-                } else { err.innerText = "Kod tapılmadı!"; }
-            } catch(e) { err.innerText = "Sistem xətası!"; }
-        }
-
-        async function loadCodes() {
-            const list = document.getElementById('codes-list');
-            list.innerHTML = "<small>Baza yüklənir...</small>";
-            const snap = await getDocs(collection(db, "codes"));
-            list.innerHTML = "";
-            let revenue = 0; let activeCount = 0;
-            const now = new Date().getTime();
-
-            snap.forEach(d => {
-                const data = d.data();
-                const isExpired = data.expiry && now > data.expiry && !data.used;
-                if(!data.used && !isExpired) activeCount++;
-                if(data.used) {
-                    const price = parseInt(data.packet.match(/\d+/g)[1]); // Qiyməti çıxarır
-                    revenue += price;
-                }
-
-                const div = document.createElement('div');
-                div.className = `code-card ${data.used ? 'used' : ''} ${isExpired ? 'expired' : ''}`;
-                div.innerHTML = `
-                    <span class="delete-btn" onclick="deleteCode('${d.id}')">SİL</span>
-                    <strong>${d.id}</strong> <small>(${isExpired ? 'VAXTI BİTİB' : (data.used ? 'İŞLƏNİB' : 'AKTİV')})</small><br>
-                    <span style="font-size:9px; color:#888;">${data.used ? 'ID: '+data.usedBy+' | IP: '+(data.ip || '---') : 'Gözləmədə'}</span>
-                `;
-                list.appendChild(div);
-            });
-            document.getElementById('total-revenue').innerText = revenue + " AZN";
-            document.getElementById('active-count').innerText = activeCount;
-        }
-
-        window.addNewCode = async function() {
-            const val = document.getElementById('new-code-input').value.trim().toUpperCase();
-            const hrs = parseInt(document.getElementById('expiry-hours').value);
-            if(!val) return;
-            const exp = hrs > 0 ? (new Date().getTime() + (hrs * 60 * 60 * 1000)) : null;
-            await setDoc(doc(db, "codes", val), { used: false, usedBy: null, expiry: exp, createdAt: new Date().getTime() });
-            document.getElementById('new-code-input').value = ""; loadCodes();
-        }
-
-        window.deleteCode = async function(id) { if(confirm(id + " silinsin?")) { await deleteDoc(doc(db, "codes", id)); loadCodes(); } }
-
-        window.clearUsed = async function() {
-            if(confirm("Bütün işlənmiş kodlar təmizlənsin?")) {
-                const snap = await getDocs(collection(db, "codes"));
-                snap.forEach(async (d) => { if(d.data().used) await deleteDoc(doc(db, "codes", d.id)); });
-                setTimeout(loadCodes, 1000);
-            }
+            const snap = await getDoc(doc(db, "codes", code));
+            if(snap.exists() && !snap.data().used) { activeCode = code; runLoader(() => showStep('step2')); }
+            else { document.getElementById('error-msg').innerText = "Kod yanlışdır və ya işlənib!"; }
         }
 
         window.processOrder = async function() {
             const pid = document.getElementById('player-id').value;
             const pack = document.getElementById('packet-select').value;
-            if(pid.length < 5) return alert("ID Yanlışdır!");
+            if(pid.length < 5) return alert("ID yanlışdır!");
             
-            const visitor = await getVisitorInfo();
-            await updateDoc(doc(db, "codes", activeCode), { 
-                used: true, usedBy: pid, packet: pack, 
-                usedAt: new Date().toLocaleString(),
-                ip: visitor.ip, device: visitor.device 
+            const rID = generateReceiptID(); lastReceipt = rID;
+            const userIP = await getIP();
+            const orderData = {
+                used: true, usedBy: pid, packet: pack, usedAt: new Date().toLocaleString(),
+                ip: userIP, receiptID: rID
+            };
+
+            await updateDoc(doc(db, "codes", activeCode), orderData);
+            // Qəbzi ayrıca bazada saxla (Axtarış üçün)
+            await setDoc(doc(db, "receipts", rID), orderData);
+
+            runLoader(() => { generateReceipt(pid, pack, rID); showStep('step3'); });
+        }
+
+        window.searchReceipt = async function() {
+            const rid = document.getElementById('search-receipt-id').value.trim().toUpperCase();
+            const resDiv = document.getElementById('search-result');
+            if(!rid) return;
+            resDiv.innerText = "Axtarılır...";
+            const snap = await getDoc(doc(db, "receipts", rid));
+            if(snap.exists()) {
+                const d = snap.data();
+                resDiv.innerHTML = `✅ Tapıldı:<br>📅 Tarix: ${d.usedAt}<br>🌐 IP: ${d.ip}<br>📦 Paket: ${d.packet}<br>👤 ID: ${d.usedBy}`;
+            } else { resDiv.innerHTML = "❌ Qəbz tapılmadı!"; }
+        }
+
+        window.loadCodes = async function() {
+            const list = document.getElementById('codes-list'); list.innerHTML = "";
+            const snap = await getDocs(collection(db, "codes"));
+            snap.forEach(d => {
+                const data = d.data();
+                list.innerHTML += `<div class="code-card ${data.used?'used':''}"><b>${d.id}</b> - ${data.used?'İŞLƏNİB':'AKTİV'}</div>`;
             });
-            
-            runLoader(() => { generateReceipt(pid, pack); showStep('step3'); });
+        }
+        
+        window.addNewCode = async function() {
+            const val = document.getElementById('new-code-input').value.trim().toUpperCase();
+            if(!val) return;
+            await setDoc(doc(db, "codes", val), { used: false });
+            loadCodes();
         }
     </script>
 
     <script>
+        // BOT CAVAB BAZASI
+        const botResponses = [
+            { k: ["salam", "sa", "necesen"], r: "Salam! Neft Game ailəsinə xoş gəldiniz. Mən yaxşıyam, sizə necə kömək edə bilərəm? 😊" },
+            { k: ["qiymet", "uc", "paket", "neceyedir"], r: "💎 Qiymətlərimiz:\n- 660 UC: 5 AZN\n- 1920 UC: 13 AZN\n- 8100 UC: 35 AZN\nBütün yükləmələr rəsmidir." },
+            { k: ["odenis", "kart", "m10", "hara"], r: "💳 Ödəniş üsulu:\nKart: **4244 4848 4180 8581**\nÖdəniş edib qəbzi WhatsApp-a göndərin (+994 77 124 49 44)." },
+            { k: ["gelmedi", "gecikdi", "vaxt"], r: "⏳ Sifarişlər adətən 5-15 dəqiqə ərzində yüklənir. Əgər 30 dəqiqədən çox keçibsə, zəhmət olmasa adminə qəbz kodunu göndərin." },
+            { k: ["guven", "ban", "risk"], r: "🛡️ Narahat olmayın! UC-lər Midasbuy vasitəsilə yüklənir. Hesabınızın ban edilmə riski 0%-dir." },
+            { k: ["kod", "aktivasiya", "hara yazim"], r: "Ödəniş etdikdən sonra admin sizə xüsusi kod verəcək. Həmin kodu ana səhifədəki 'Giriş' xanasına yazmalısınız." },
+            { k: ["admin", "wp", "elaqe"], r: "📱 Canlı dəstək (WhatsApp): +994 77 124 49 44" }
+        ];
+
+        function sendMessage() {
+            const inp = document.getElementById('chat-input');
+            const txt = inp.value.toLowerCase();
+            if(!txt) return;
+            addMsg(inp.value, 'user-msg');
+            inp.value = "";
+            
+            setTimeout(() => {
+                let reply = "Başa düşmədim. Zəhmət olmasa daha aydın yazın və ya Adminlə əlaqə saxlayın: +994 77 124 49 44";
+                for(let item of botResponses) {
+                    if(item.k.some(key => txt.includes(key))) { reply = item.r; break; }
+                }
+                addMsg(reply, 'bot-msg');
+            }, 800);
+        }
+
+        function addMsg(t, c) {
+            const b = document.getElementById('chat-body');
+            const d = document.createElement('div'); d.className = `message ${c}`; d.innerText = t;
+            b.appendChild(d); b.scrollTop = b.scrollHeight;
+        }
+
         function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
-        function runLoader(cb) { showStep('step-loader'); let p = 0; let iv = setInterval(() => { p += 25; document.getElementById('progress-fill').style.width = p + "%"; if(p >= 100) { clearInterval(iv); cb(); } }, 300); }
+        function runLoader(cb) { showStep('step-loader'); let p = 0; let iv = setInterval(() => { p += 25; document.getElementById('progress-fill').style.width = p + "%"; if(p >= 100) { clearInterval(iv); cb(); } }, 250); }
         function openChat() { document.getElementById('chat-overlay').style.display='flex'; }
         function closeChat() { document.getElementById('chat-overlay').style.display='none'; }
 
-        function generateReceipt(id, pack) {
+        function generateReceipt(id, pack, rID) {
             const canvas = document.getElementById('receiptCanvas');
             const ctx = canvas.getContext('2d');
-            ctx.fillStyle = "#0f0f12"; ctx.fillRect(0,0,400,500);
-            ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,500);
+            ctx.fillStyle = "#0f0f12"; ctx.fillRect(0,0,400,550);
+            ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,550);
             ctx.fillStyle = "#00f2ff"; ctx.font = "bold 26px Arial"; ctx.fillText("NEFT GAME SHOP", 85, 60);
-            ctx.fillStyle = "#fff"; ctx.font = "16px Courier New";
-            ctx.fillText("--------------------------", 40, 120);
+            ctx.fillStyle = "#fff"; ctx.font = "15px Courier New";
+            ctx.fillText("----------------------------", 40, 120);
             ctx.fillText("OYUNÇU ID: " + id, 40, 180);
-            ctx.fillText("MƏHSUL: " + pack, 40, 220);
-            ctx.fillText("STATUS: UĞURLU", 40, 260);
-            ctx.fillText("--------------------------", 40, 320);
-            ctx.fillStyle = "#00ff88"; ctx.font = "bold 20px Arial";
-            ctx.fillText("SİFARİŞ TƏSDİQLƏNDİ", 95, 420);
+            ctx.fillText("MƏHSUL: " + pack, 40, 230);
+            ctx.fillText("TARİX: " + new Date().toLocaleString(), 40, 280);
+            ctx.fillStyle = "#00f2ff";
+            ctx.fillText("QƏBZ KODU: " + rID, 40, 330);
+            ctx.fillText("----------------------------", 40, 380);
+            ctx.fillStyle = "#00ff88"; ctx.font = "bold 20px Arial"; ctx.fillText("ÖDƏNİŞ TƏSDİQLƏNDİ", 95, 470);
+            ctx.font = "12px Arial"; ctx.fillStyle = "#888"; ctx.fillText("Bu qəbz sistem tərəfindən avtomatik yaradılıb.", 70, 520);
         }
 
-        function downloadReceipt() { const link = document.createElement('a'); link.download = 'qebz.png'; link.href = document.getElementById('receiptCanvas').toDataURL(); link.click(); }
-        
-        function sendMessage() {
-            const inp = document.getElementById('chat-input');
-            if(!inp.value) return;
-            const b = document.getElementById('chat-body');
-            b.innerHTML += `<div class="message user-msg">${inp.value}</div>`;
-            setTimeout(() => { b.innerHTML += `<div class="message bot-msg">Dəstək üçün WhatsApp: +994 77 124 49 44</div>`; b.scrollTop = b.scrollHeight; }, 800);
-            inp.value = "";
-        }
+        function downloadReceipt() { const link = document.createElement('a'); link.download = 'neft_game_receipt.png'; link.href = document.getElementById('receiptCanvas').toDataURL(); link.click(); }
     </script>
 </body>
-    </html>
-    
+</html>
