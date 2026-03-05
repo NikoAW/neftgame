@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neft Game - SideMenu v6.6</title>
+    <title>Neft Game - Ultimate v6.7</title>
     <style>
         :root {
             --primary: #00f2ff; --secondary: #7000ff; --bg: #0a0a0c;
@@ -13,107 +13,81 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
         
-        /* ADMİN DUYURU LENTİ */
-        #announcement-bar { position: fixed; top: 0; width: 100%; background: linear-gradient(90deg, #7000ff, #00f2ff); color: #000; font-weight: bold; padding: 6px 0; font-size: 13px; z-index: 900; display: none; overflow: hidden; }
-        .marquee { display: inline-block; white-space: nowrap; animation: marquee 18s linear infinite; padding-left: 100%; }
+        /* BANNER LENTI */
+        #announcement-bar { position: fixed; top: 0; width: 100%; background: linear-gradient(90deg, #7000ff, #00f2ff); color: #000; font-weight: bold; padding: 8px 0; font-size: 13px; z-index: 900; display: none; overflow: hidden; box-shadow: 0 4px 15px rgba(0,242,255,0.3); }
+        .marquee { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
 
-        /* CANLI SİFARİŞ BİLDİRİŞİ */
-        #live-notif { position: fixed; bottom: 25px; left: -350px; background: rgba(22, 22, 26, 0.98); border: 1px solid var(--primary); padding: 15px; border-radius: 15px; display: flex; align-items: center; gap: 12px; transition: 0.6s; z-index: 1001; }
-        #live-notif.show { left: 20px; }
+        /* MENU ICON ANIMATION */
+        .menu-trigger { position: fixed; top: 50px; right: 20px; z-index: 1100; cursor: pointer; transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .menu-trigger.open { transform: rotate(180deg) scale(1.1); }
+        .menu-trigger img { width: 50px; height: 50px; filter: drop-shadow(0 0 5px var(--primary)); }
 
-        /* MENU BUTTON */
-        .menu-trigger { position: fixed; top: 40px; right: 15px; z-index: 1100; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        .menu-trigger:hover { transform: scale(1.1) rotate(90deg); }
-        .menu-trigger img { width: 45px; height: 45px; }
-
-        /* SIDE DRAWER */
-        #side-menu { position: fixed; top: 0; right: -70%; width: 70%; height: 100%; background: rgba(10, 10, 12, 0.98); border-left: 2px solid var(--primary); z-index: 1050; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); padding-top: 100px; box-shadow: -20px 0 50px rgba(0,0,0,0.9); }
+        /* SIDE MENU */
+        #side-menu { position: fixed; top: 0; right: -75%; width: 75%; height: 100%; background: rgba(10, 10, 12, 0.98); border-left: 2px solid var(--primary); z-index: 1050; transition: 0.5s; padding-top: 120px; box-shadow: -20px 0 50px #000; }
         #side-menu.active { right: 0; }
-        .menu-item { padding: 20px 30px; border-bottom: 1px solid #222; font-weight: bold; color: var(--text); cursor: pointer; display: flex; align-items: center; gap: 15px; transition: 0.3s; }
-        .menu-item:hover { background: rgba(0, 242, 255, 0.1); color: var(--primary); }
-        .menu-item img { width: 24px; }
+        .menu-item { padding: 20px 25px; border-bottom: 1px solid #222; font-weight: bold; display: flex; align-items: center; gap: 15px; cursor: pointer; }
+        .menu-item:active { background: rgba(0, 242, 255, 0.1); }
 
-        /* OVERLAY FOR MENU */
-        #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; z-index: 1040; }
+        /* OVERLAY */
+        #menu-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1040; backdrop-filter: blur(3px); }
 
-        .container { width: 95%; max-width: 450px; background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; margin-top: 50px; position: relative; }
-        h2 { color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; font-size: 1.2rem; }
-        input, select { width: 100%; padding: 14px; margin: 10px 0; background: #222; border: 1px solid #333; border-radius: 12px; color: white; outline: none; }
-        .main-btn { width: 100%; padding: 16px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; margin-top: 10px; }
+        /* CORE UI */
+        .container { width: 92%; max-width: 420px; background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); text-align: center; position: relative; z-index: 10; }
+        h2 { color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; }
+        input, select { width: 100%; padding: 15px; margin: 10px 0; background: #1a1a1e; border: 1px solid #333; border-radius: 12px; color: white; outline: none; }
+        .main-btn { width: 100%; padding: 18px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; }
 
-        /* SECTIONS (FAQ, CHAT vs) */
+        /* FULL SECTIONS (CHAT/FAQ) */
         .full-screen-section { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; flex-direction: column; }
-        .section-header { padding: 20px; background: var(--card-bg); border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
-        .faq-item { background: #1a1a1e; padding: 15px; border-radius: 10px; margin-bottom: 10px; text-align: left; }
-        .faq-item b { color: var(--primary); display: block; margin-bottom: 5px; }
-
-        /* ADMIN PANEL (Old version kept) */
-        #admin-panel { display: none; margin-top: 20px; padding: 15px; background: #000; border-radius: 15px; border: 2px solid var(--primary); text-align: left; }
-        .code-card { background: #111; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 11px; border-left: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: center; }
-
+        .section-header { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        
+        /* ADMIN PANEL STYLES */
+        #admin-panel { display: none; margin-top: 25px; padding: 15px; background: #000; border: 2px solid var(--primary); border-radius: 15px; text-align: left; }
+        
         .step { display: none; } .step.active { display: block; }
-        .progress-bar { height: 10px; background: #222; border-radius: 5px; overflow: hidden; margin: 25px 0; }
-        .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.4s; }
-        #receiptCanvas { width: 100%; border-radius: 10px; border: 1px solid #333; }
+        #live-notif { position: fixed; bottom: 20px; left: -350px; background: #16161a; border: 1px solid var(--primary); padding: 12px; border-radius: 12px; z-index: 3000; transition: 0.6s; display: flex; align-items: center; gap: 10px; }
+        #live-notif.show { left: 15px; }
     </style>
 </head>
 <body>
 
-    <div id="announcement-bar"><div class="marquee" id="ann-text">NEFT GAME SHOP-A XOŞ GƏLMİŞSİNİZ!</div></div>
+    <div id="announcement-bar"><div class="marquee" id="ann-text">YÜKLƏNİR...</div></div>
 
-    <div class="menu-trigger" onclick="toggleMenu()">
+    <div class="menu-trigger" id="m-icon" onclick="toggleMenu()">
         <img src="https://img.icons8.com/3d-fluency/94/menu.png" alt="menu"/>
     </div>
 
     <div id="menu-overlay" onclick="toggleMenu()"></div>
     <div id="side-menu">
-        <div class="menu-item" onclick="openSection('sec-chat')">
-            <img src="https://img.icons8.com/fluency/48/chatbot.png"> KÖMƏK
-        </div>
-        <div class="menu-item" onclick="openSection('sec-faq')">
-            <img src="https://img.icons8.com/fluency/48/help.png"> TEZ TEZ VERİLEN SUALLAR
-        </div>
-        <div class="menu-item" onclick="window.open('https://wa.me/994771244944', '_blank')">
-            <img src="https://img.icons8.com/color/48/whatsapp.png"> WHATSAPP
-        </div>
-        <div class="menu-item" onclick="window.open('https://tiktok.com/@neftgame.az', '_blank')">
-            <img src="https://img.icons8.com/color/48/tiktok.png"> TİKTOK
-        </div>
+        <div class="menu-item" onclick="openSection('sec-chat')"><img width="30" src="https://img.icons8.com/fluency/48/chatbot.png"> KÖMƏK (BOT)</div>
+        <div class="menu-item" onclick="openSection('sec-faq')"><img width="30" src="https://img.icons8.com/fluency/48/help.png"> FAQ (SUALLAR)</div>
+        <div class="menu-item" onclick="window.open('https://wa.me/994771244944')"><img width="30" src="https://img.icons8.com/color/48/whatsapp.png"> WHATSAPP</div>
+        <div class="menu-item" onclick="window.open('https://tiktok.com/@neftgame.az')"><img width="30" src="https://img.icons8.com/color/48/tiktok.png"> TİKTOK</div>
     </div>
 
     <div id="sec-chat" class="full-screen-section">
         <div class="section-header">
-            <span style="color:var(--primary); font-weight:bold;">🤖 BOT DƏSTƏK</span>
-            <button onclick="closeSection('sec-chat')" style="background:none; border:none; color:white; font-size:2rem;">&times;</button>
+            <span style="color:var(--primary); font-weight:bold;">🤖 NEFT BOT v6.7</span>
+            <button onclick="closeSection('sec-chat')" style="background:none; border:none; color:white; font-size:2.5rem;">&times;</button>
         </div>
-        <div class="chat-body" id="chat-body" style="flex-grow:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:10px;">
-            <div class="message bot-msg" style="background:var(--chat-bot); padding:15px; border-radius:15px; max-width:85%;">Salam! Sizə necə kömək edə bilərəm? 🤖</div>
+        <div id="chat-body" style="flex-grow:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;">
+            <div class="message bot-msg" style="background:var(--chat-bot); padding:12px; border-radius:15px; align-self:flex-start;">Salam! Mən Neft Game botuyam. Sizə necə kömək edə bilərəm? 😊</div>
         </div>
-        <div style="padding:20px; background:#111; display:flex; gap:10px;">
-            <input type="text" id="chat-input" placeholder="Bura yazın..." style="margin:0; border-radius:25px;">
-            <button onclick="sendMessage()" style="background:var(--primary); border:none; width:50px; height:50px; border-radius:50%; font-weight:bold;">></button>
+        <div style="padding:15px; background:#111; display:flex; gap:10px;">
+            <input type="text" id="chat-input" placeholder="Sualınızı yazın..." style="margin:0; border-radius:30px;">
+            <button onclick="sendMessage()" style="background:var(--primary); border:none; width:55px; height:55px; border-radius:50%; color:black; font-weight:bold;">></button>
         </div>
     </div>
 
     <div id="sec-faq" class="full-screen-section">
         <div class="section-header">
             <span style="color:var(--primary); font-weight:bold;">❓ TEZ-TEZ VERİLƏN SUALLAR</span>
-            <button onclick="closeSection('sec-faq')" style="background:none; border:none; color:white; font-size:2rem;">&times;</button>
+            <button onclick="closeSection('sec-faq')" style="background:none; border:none; color:white; font-size:2.5rem;">&times;</button>
         </div>
-        <div style="padding:20px; overflow-y:auto;">
-            <div class="faq-item"><b>1. UC nə vaxt hesaba gəlir?</b>Sifariş təsdiq edildikdən 5-15 dəqiqə ərzində ID-yə yüklənir.</div>
-            <div class="faq-item"><b>2. Güvənlidirmi?</b>Bəli, rəsmi tərəfdaşlıq ilə yüklənir. Hesabınızın ban alma ehtimalı 0-dır.</div>
-            <div class="faq-item"><b>3. Ödəniş üsulları hansılardır?</b>Yalnız onlayn (kartdan-karta) ödəniş qəbul edilir.</div>
-            <div class="faq-item"><b>4. Səhv ID daxil etsəm nə olar?</b>Yükləmə tamamlanıbsa geri qaytarılmır. Zəhmət olmasa ID-ni iki dəfə yoxlayın.</div>
-        </div>
-    </div>
-
-    <div id="live-notif">
-        <div style="background:var(--primary); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-weight:bold;">✓</div>
-        <div style="font-size: 12px;">
-            <b id="notif-user" style="color:var(--primary);">İstifadəçi: ---</b><br>
-            <span id="notif-pack" style="color:var(--success);">Yüklənir...</span>
+        <div style="padding:20px;">
+            <div style="background:#1a1a1e; padding:15px; border-radius:10px; margin-bottom:10px;"><b>UC-lər nə vaxt gəlir?</b><br>Ödənişdən sonra 5-20 dəqiqə ərzində.</div>
+            <div style="background:#1a1a1e; padding:15px; border-radius:10px; margin-bottom:10px;"><b>Ban riski varmı?</b><br>Xeyr, sistem 100% rəsmidir.</div>
         </div>
     </div>
 
@@ -121,18 +95,15 @@
         <div id="step1" class="step active">
             <h2>SİSTEMƏ GİRİŞ</h2>
             <input type="text" id="access-code" placeholder="Aktivasiya Kodunu Daxil Edin">
-            <p id="error-msg" style="color:var(--error); font-size:0.8rem; min-height:20px;"></p>
+            <p id="error-msg" style="color:var(--error); font-size:0.8rem;"></p>
             <button class="main-btn" onclick="verifyCode()">DAXİL OL</button>
 
             <div id="admin-panel">
-                <div style="color:var(--primary); font-weight:bold; margin-bottom:15px;">📊 ADMİN STRATEJİ</div>
-                <div style="background:#111; padding:10px; border-radius:10px; margin-bottom:10px;">
-                    <small>📢 ELAN YAYIMLA</small>
-                    <input type="text" id="admin-ann-input" placeholder="Banner mətni...">
-                    <button onclick="updateAnn()" style="width:100%; background:var(--secondary); border:none; padding:8px; border-radius:6px; color:white; font-weight:bold;">YENİLƏ</button>
-                </div>
-                <div id="codes-list"></div>
-                <button onclick="addNewCodeUI()" style="width:100%; background:var(--success); border:none; padding:12px; border-radius:10px; font-weight:bold; margin-top:10px;">+ YENİ KOD</button>
+                <h4 style="color:var(--primary); margin-bottom:10px;">📢 ADMİN PANEL</h4>
+                <input type="text" id="admin-ann-input" placeholder="Banner mətni...">
+                <button onclick="updateAnn()" style="width:100%; background:var(--secondary); border:none; padding:10px; color:white; font-weight:bold; border-radius:8px; cursor:pointer;">BANNERİ YENİLƏ</button>
+                <div id="codes-list" style="margin-top:15px; max-height:150px; overflow-y:auto;"></div>
+                <button onclick="addNewCodeUI()" style="width:100%; background:var(--success); border:none; padding:10px; margin-top:10px; font-weight:bold; border-radius:8px;">+ YENİ KOD</button>
             </div>
         </div>
 
@@ -145,62 +116,80 @@
 
         <div id="step3" class="step">
             <h2 style="color:var(--success);">TAMAMLANDI!</h2>
-            <canvas id="receiptCanvas" width="400" height="550"></canvas>
+            <canvas id="receiptCanvas" width="400" height="550" style="width:100%; border-radius:15px;"></canvas>
             <button class="main-btn" onclick="downloadReceipt()">QƏBZİ YÜKLƏ</button>
         </div>
+    </div>
 
-        <div id="step-loader" class="step">
-            <h2>İŞLƏNİLİR...</h2>
-            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-        </div>
+    <div id="live-notif">
+        <div style="background:var(--primary); width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:black;">✓</div>
+        <div style="font-size:11px;"><b id="n-u">Id:53****</b><br><span id="n-p">Sifariş verdi!</span></div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc, onSnapshot, query, limit, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = { apiKey: "AIzaSyCOq7UqFo6Y9ldVXRthRP6U02TayFkv53I", authDomain: "neftgame-e4de3.firebaseapp.com", projectId: "neftgame-e4de3", storageBucket: "neftgame-e4de3.firebasestorage.app", appId: "1:27529172910:web:1a2a752e79295d47c39a3f" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         let activeCode = "";
 
-        // UI NAVIGATION
+        // 🟢 MENU TOGGLE FIX
         window.toggleMenu = () => {
             const menu = document.getElementById('side-menu');
             const overlay = document.getElementById('menu-overlay');
+            const icon = document.getElementById('m-icon');
             menu.classList.toggle('active');
+            icon.classList.toggle('open');
             overlay.style.display = menu.classList.contains('active') ? 'block' : 'none';
         };
 
-        window.openSection = (id) => {
-            toggleMenu();
-            document.getElementById(id).style.display = 'flex';
-        };
-
-        window.closeSection = (id) => {
-            document.getElementById(id).style.display = 'none';
-        };
-
-        // NOTIF SYSTEM
-        const qLive = query(collection(db, "receipts"), orderBy("usedAt", "desc"), limit(1));
-        onSnapshot(qLive, (snap) => {
-            snap.docChanges().forEach((c) => {
-                if(c.type === "added") {
-                    const d = c.doc.data();
-                    document.getElementById('notif-user').innerText = "İstifadəçi: " + (d.usedBy ? d.usedBy.substring(0,4)+"***" : "Naməlum");
-                    document.getElementById('notif-pack').innerText = d.packet + " sifariş etdi!";
-                    document.getElementById('live-notif').classList.add('show');
-                    setTimeout(() => document.getElementById('live-notif').classList.remove('show'), 6000);
-                }
-            });
+        // 🟢 BANNER SYSTEM FIX
+        onSnapshot(doc(db, "settings", "announcement"), (s) => {
+            if(s.exists()){
+                document.getElementById('announcement-bar').style.display = 'block';
+                document.getElementById('ann-text').innerText = s.data().text;
+            }
         });
 
-        // AUTH & ORDER
+        window.updateAnn = async function() {
+            const txt = document.getElementById('admin-ann-input').value;
+            if(!txt) return alert("Mətn daxil edin!");
+            await setDoc(doc(db, "settings", "announcement"), { text: txt });
+            alert("Banner yeniləndi!");
+        };
+
+        // 🟢 SMART BOT FIX
+        window.sendMessage = () => {
+            const inp = document.getElementById('chat-input');
+            const val = inp.value.toLowerCase().trim();
+            const body = document.getElementById('chat-body');
+            if(!val) return;
+
+            body.innerHTML += `<div class="message user-msg" style="background:var(--chat-user); padding:10px; border-radius:15px; align-self:flex-end;">${inp.value}</div>`;
+            
+            let r = "Başa düşmədim. Zəhmət olmasa operatora yazın: +994 77 124 49 44";
+            if(val.includes("salam")) r = "Salam! Neft Game-ə xoş gəlmisiniz. Necə kömək edim? 😊";
+            else if(val.includes("qiymet") || val.includes("neçəyə")) r = "💎 Qiymətlər: 660 UC - 5 AZN, 1920 UC - 13 AZN, 8100 UC - 35 AZN.";
+            else if(val.includes("kart") || val.includes("ödəniş")) r = "💳 Ödəniş üçün kart: <b>4244 4848 4180 8581</b>. Ödədikdən sonra çeki atın.";
+            else if(val.includes("güvən") || val.includes("etibar")) r = "🛡️ Biz 3 ildir xidmət veririk. Bütün yükləmələr rəsmi və zəmanətlidir.";
+            else if(val.includes("vaxt") || val.includes("nə zaman")) r = "⏱️ Sifarişlər adətən 10-15 dəqiqə ərzində hesaba daxil olur.";
+            else if(val.includes("sağol") || val.includes("təşəkkür")) r = "Buyurun! Həmişə xidmətinizdəyik. 🤝";
+
+            setTimeout(() => {
+                body.innerHTML += `<div class="message bot-msg" style="background:var(--chat-bot); padding:10px; border-radius:15px; align-self:flex-start;">${r}</div>`;
+                body.scrollTop = body.scrollHeight;
+            }, 600);
+            inp.value = "";
+        };
+
+        // 🟢 AUTH & ORDER
         window.verifyCode = async function() {
             const code = document.getElementById('access-code').value.trim().toUpperCase();
             if(code === "ADMIN2026") { document.getElementById('admin-panel').style.display = 'block'; loadCodes(); return; }
             const snap = await getDoc(doc(db, "codes", code));
-            if(snap.exists() && !snap.data().used) { activeCode = code; runLoader(() => showStep('step2')); }
+            if(snap.exists() && !snap.data().used) { activeCode = code; showStep('step2'); }
             else { document.getElementById('error-msg').innerText = "Kod yanlışdır!"; }
         };
 
@@ -208,52 +197,37 @@
             const pid = document.getElementById('player-id').value;
             const pack = document.getElementById('packet-select').value;
             if(pid.length < 5) return alert("ID yazın!");
-            const rid = "NFT-" + Math.random().toString(36).substr(2, 7).toUpperCase();
+            const rid = "NFT-" + Math.floor(Math.random()*999999);
             const data = { used: true, usedBy: pid, packet: pack, usedAt: new Date().getTime(), receiptID: rid };
             await updateDoc(doc(db, "codes", activeCode), data);
             await setDoc(doc(db, "receipts", rid), data);
-            runLoader(() => { generateReceipt(pid, pack, rid); showStep('step3'); });
+            generateReceipt(pid, pack, rid); showStep('step3');
         };
 
-        // ADMIN TOOLS
         window.loadCodes = async function() {
             const snap = await getDocs(collection(db, "codes"));
             const list = document.getElementById('codes-list'); list.innerHTML = "";
             snap.forEach(d => {
-                list.innerHTML += `<div class="code-card"><span>${d.id} [${d.data().used?'❌':'✅'}]</span><span onclick="deleteCode('${d.id}')" style="color:red; cursor:pointer;">SİL</span></div>`;
+                list.innerHTML += `<div style="background:#111; padding:8px; margin-bottom:5px; display:flex; justify-content:space-between; font-size:11px;"><span>${d.id}</span><span onclick="deleteCode('${d.id}')" style="color:red; cursor:pointer;">SİL</span></div>`;
             });
         };
-        window.addNewCodeUI = async function() {
-            const val = prompt("Yeni kod:");
-            if(val) { await setDoc(doc(db, "codes", val.toUpperCase()), { used: false }); loadCodes(); }
-        };
-        window.deleteCode = async function(id) { if(confirm("Silinsin?")) { await deleteDoc(doc(db, "codes", id)); loadCodes(); } };
-        window.updateAnn = async function() {
-            const txt = document.getElementById('admin-ann-input').value;
-            await setDoc(doc(db, "settings", "announcement"), { text: txt });
-        };
+        window.addNewCodeUI = async function() { const v = prompt("Kod:"); if(v){ await setDoc(doc(db, "codes", v.toUpperCase()), {used:false}); loadCodes(); } };
+        window.deleteCode = async function(id) { if(confirm("Silinsin?")){ await deleteDoc(doc(db, "codes", id)); loadCodes(); } };
 
-        // HELPER FUNCTIONS
         function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
-        function runLoader(cb) { showStep('step-loader'); let p = 0; let iv = setInterval(() => { p += 25; document.getElementById('progress-fill').style.width = p + "%"; if(p >= 100) { clearInterval(iv); cb(); } }, 200); }
-
-        window.sendMessage = () => {
-            const inp = document.getElementById('chat-input'); const b = document.getElementById('chat-body');
-            if(!inp.value) return;
-            b.innerHTML += `<div class="message user-msg" style="align-self:flex-end; background:var(--chat-user); padding:10px; border-radius:15px; margin-top:5px;">${inp.value}</div>`;
-            setTimeout(() => { b.innerHTML += `<div class="message bot-msg" style="background:var(--chat-bot); padding:10px; border-radius:15px; margin-top:5px;">Zəhmət olmasa operatora yazın: +994 77 124 49 44</div>`; b.scrollTop = b.scrollHeight; }, 600);
-            inp.value = "";
-        };
+        window.openSection = (id) => { toggleMenu(); document.getElementById(id).style.display = 'flex'; };
+        window.closeSection = (id) => document.getElementById(id).style.display = 'none';
 
         function generateReceipt(id, p, rid) {
             const c = document.getElementById('receiptCanvas'); const ctx = c.getContext('2d');
             ctx.fillStyle = "#0f0f12"; ctx.fillRect(0,0,400,550);
             ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,550);
             ctx.fillStyle = "#00f2ff"; ctx.font = "bold 26px Arial"; ctx.fillText("NEFT GAME SHOP", 85, 60);
-            ctx.fillStyle = "#fff"; ctx.font = "16px Arial"; ctx.fillText("ID: " + id, 50, 150); ctx.fillText("Paket: " + p, 50, 200); ctx.fillText("Kod: " + rid, 50, 250);
+            ctx.fillStyle = "#fff"; ctx.font = "16px Arial"; ctx.fillText("ID: " + id, 50, 150); ctx.fillText("Paket: " + p, 50, 200); ctx.fillText("Qəbz: " + rid, 50, 250);
             ctx.fillStyle = "#00ff88"; ctx.fillText("ÖDƏNİŞ TƏSDİQLƏNDİ", 110, 480);
         }
         window.downloadReceipt = () => { const a = document.createElement('a'); a.download = 'neft.png'; a.href = document.getElementById('receiptCanvas').toDataURL(); a.click(); };
     </script>
 </body>
-</html>
+                </html>
+                
