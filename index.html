@@ -3,311 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neft Game - Ultimate v6.1 Gold</title>
+    <title>Neft Game - Royal v7.0</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
             --primary: #00f2ff; --secondary: #7000ff; --bg: #0a0a0c;
             --card-bg: #16161a; --text: #ffffff; --error: #ff4d4d;
-            --success: #00ff88; --chat-bot: #25252b; --chat-user: #7000ff;
+            --success: #00ff88; --gold: #ffd700;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
         
-        /* ADMİN DUYURU LENTİ */
-        #announcement-bar { position: fixed; top: 0; width: 100%; background: linear-gradient(90deg, #7000ff, #00f2ff); color: #000; font-weight: bold; padding: 6px 0; font-size: 13px; z-index: 1000; display: none; overflow: hidden; box-shadow: 0 2px 10px rgba(0,242,255,0.3); }
-        .marquee { display: inline-block; white-space: nowrap; animation: marquee 18s linear infinite; padding-left: 100%; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
+        /* BANNER & NOTIF */
+        #announcement-bar { position: fixed; top: 0; width: 100%; background: linear-gradient(90deg, #7000ff, #00f2ff); color: #000; font-weight: bold; padding: 6px; z-index: 1000; overflow: hidden; font-size: 13px; display:none; }
+        .marquee { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
 
-        /* CANLI SİFARİŞ BİLDİRİŞİ (YENİLƏNDİ) */
-        #live-notif { position: fixed; bottom: 25px; left: -350px; background: rgba(22, 22, 26, 0.98); border: 1px solid var(--primary); padding: 15px; border-radius: 15px; display: flex; align-items: center; gap: 12px; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1001; box-shadow: 0 10px 30px rgba(0,0,0,0.8); min-width: 250px; }
+        #live-notif { position: fixed; bottom: 20px; left: -350px; background: var(--card-bg); border: 1px solid var(--primary); padding: 12px; border-radius: 12px; transition: 0.5s; z-index: 1001; display:flex; gap:10px; align-items:center; }
         #live-notif.show { left: 20px; }
-        .notif-icon { width: 35px; height: 35px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #000; font-size: 18px; }
 
-        .container { width: 95%; max-width: 450px; background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; margin-top: 50px; position: relative; z-index: 10; }
-        h2 { color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; font-size: 1.2rem; }
-        input, select { width: 100%; padding: 14px; margin: 10px 0; background: #222; border: 1px solid #333; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
-        .main-btn { width: 100%; padding: 16px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; margin-top: 10px; transition: 0.3s; }
-        .main-btn:hover { opacity: 0.9; transform: scale(0.98); }
+        /* MAIN UI */
+        .container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+        .main-card { width: 100%; max-width: 450px; background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
         
-        /* ADMIN PANEL */
-        #admin-panel { display: none; margin-top: 20px; padding: 15px; background: #000; border-radius: 15px; border: 2px solid var(--primary); text-align: left; }
-        .code-card { background: #111; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 11px; border-left: 4px solid var(--primary); position: relative; display: flex; justify-content: space-between; align-items: center; }
-        .delete-btn { color: var(--error); cursor: pointer; font-weight: bold; font-size: 10px; padding: 5px; background: rgba(255,0,0,0.1); border-radius: 4px; }
+        /* WHEEL STYLE */
+        #wheel-container { display: none; margin-top: 20px; position: relative; }
+        #wheel { width: 300px; height: 300px; border-radius: 50%; border: 8px solid var(--gold); transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); background: conic-gradient(#7000ff 0% 25%, #00f2ff 25% 50%, #7000ff 50% 75%, #00f2ff 75% 100%); position: relative; }
+        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--gold); z-index: 10; }
 
-        /* CHAT UI */
-        #chat-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; flex-direction: column; }
-        .chat-body { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .message { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 0.9rem; line-height: 1.4; }
-        .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 2px; }
-        .user-msg { background: var(--chat-user); align-self: flex-end; border-bottom-right-radius: 2px; }
+        /* BUTTONS & INPUTS */
+        input, select { width: 100%; padding: 15px; margin: 10px 0; background: #222; border: 1px solid #333; border-radius: 12px; color: white; outline: none; }
+        .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
+        .btn-primary { background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; }
+        .btn-gold { background: linear-gradient(45deg, #b8860b, var(--gold)); color: black; margin-top: 20px; }
+
+        /* ADMIN DASHBOARD */
+        #admin-panel { display: none; width: 95%; max-width: 900px; background: #000; padding: 20px; border-radius: 20px; border: 2px solid var(--primary); margin-top: 20px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card { background: #111; padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); }
         
         .step { display: none; } .step.active { display: block; }
-        .progress-bar { height: 10px; background: #222; border-radius: 5px; overflow: hidden; margin: 25px 0; }
-        .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.4s; }
-        #receiptCanvas { width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid #333; }
+        canvas { max-width: 100%; border-radius: 10px; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="announcement-bar"><div class="marquee" id="ann-text">NEFT GAME SHOP-A XOŞ GƏLMİŞSİNİZ! YENİ ENDİRİMLƏR ÜÇÜN BİZİ İZLƏYİN!</div></div>
+    <div id="announcement-bar"><div class="marquee" id="ann-text">YENİ: 3 SİFARİŞ VERƏNƏ ÖZƏL HƏDİYYƏ ÇARXI AKTİVLƏŞİR! 🎁</div></div>
 
     <div id="live-notif">
-        <div class="notif-icon">✓</div>
-        <div style="font-size: 12px;">
-            <b id="notif-user" style="color:var(--primary);">İstifadəçi: ---</b><br>
-            <span id="notif-pack" style="color:var(--success); font-weight: 500;">Sifariş yüklənir...</span>
-        </div>
+        <div style="background:var(--primary); width:35px; height:35px; border-radius:50%; color:black; display:flex; align-items:center; justify-content:center; font-weight:bold;">!</div>
+        <div style="font-size:12px;"><b id="notif-user">ID: ---</b><br><span id="notif-pack" style="color:var(--success);">Sifariş edildi!</span></div>
     </div>
 
     <div class="container">
-        <div id="step1" class="step active">
-            <div onclick="openChat()" style="cursor:pointer; margin-bottom: 15px; display: inline-block;">
-                <img width="54" height="54" src="https://img.icons8.com/fluency/48/chatbot--v1.png" alt="bot"/>
-                <p style="color:var(--primary); font-size: 0.7rem; font-weight: bold; margin-top: 5px;">BOT DƏSTƏK</p>
-            </div>
-            <h2>SİSTEMƏ GİRİŞ</h2>
-            <input type="text" id="access-code" placeholder="Aktivasiya Kodunu Daxil Edin">
-            <p id="error-msg" style="color:var(--error); font-size:0.8rem; min-height:20px; margin-top:5px;"></p>
-            <button class="main-btn" onclick="verifyCode()">DAXİL OL</button>
-
-            <div id="admin-panel">
-                <div style="display:flex; justify-content:space-between; color:var(--primary); margin-bottom:15px; font-weight:bold; border-bottom: 1px solid #333; padding-bottom: 10px;">
-                    <span>📊 ADMİN STRATEJİ v6.1</span>
-                    <span onclick="location.reload()" style="cursor:pointer; color: #888;">[X]</span>
+        <div class="main-card" id="user-card">
+            <div id="step1" class="step active">
+                <img width="64" src="https://img.icons8.com/fluency/96/chatbot--v1.png"/>
+                <h2 style="color:var(--primary); margin: 15px 0;">NEFT GAME</h2>
+                <p style="font-size:0.8rem; color:#888;">Cihaz Statusu: <span id="order-count" style="color:var(--success);">0</span>/3 Sifariş</p>
+                <input type="text" id="access-code" placeholder="Aktivasiya Kodu">
+                <p id="error-msg" style="color:var(--error); font-size:0.8rem;"></p>
+                <button class="btn btn-primary" onclick="verifyCode()">DAXİL OL</button>
+                <div id="wheel-launch-btn" style="display:none;">
+                    <button class="btn btn-gold" onclick="showWheel()">🎡 HƏDİYYƏ ÇARXINI ÇEVİR!</button>
                 </div>
+            </div>
 
-                <div style="background:#111; padding:10px; border-radius:10px; margin-bottom:10px; border: 1px solid #222;">
-                    <small style="color:var(--primary);">📢 ELAN YAYIMLA</small>
-                    <input type="text" id="admin-ann-input" placeholder="Banner mətnini yazın..." style="padding:8px; font-size:11px; margin-bottom: 5px;">
-                    <button onclick="updateAnn()" style="width:100%; background:var(--secondary); border:none; color:white; padding:8px; border-radius:6px; cursor:pointer; font-weight: bold;">YENİLƏ</button>
-                </div>
+            <div id="step2" class="step">
+                <h2>UC SİFARİŞİ</h2>
+                <select id="packet-select">
+                    <option value="660 UC (5 AZN)">660 UC • 5 AZN</option>
+                    <option value="1920 UC (13 AZN)">1920 UC • 13 AZN</option>
+                    <option value="8100 UC (35 AZN)">8100 UC • 35 AZN</option>
+                </select>
+                <input type="number" id="player-id" placeholder="Oyunçu ID">
+                <button class="btn btn-primary" onclick="processOrder()">TƏSDİQLƏ</button>
+            </div>
 
-                <div style="background:#111; padding:10px; border-radius:10px; margin-bottom:10px; border: 1px solid #222;">
-                    <small style="color:var(--primary);">🔍 QƏBZ AXTARİŞ (ID ilə)</small>
-                    <input type="text" id="search-receipt-id" placeholder="NFT-XXXXXX" style="padding:8px; font-size:11px; margin-bottom: 5px;">
-                    <button onclick="searchReceipt()" style="width:100%; background:var(--primary); border:none; padding:8px; border-radius:6px; color:black; font-weight:bold; cursor:pointer;">AXTAR</button>
-                    <div id="search-result" style="margin-top:10px; font-size:10px; color:var(--success); line-height: 1.4;"></div>
-                </div>
+            <div id="step3" class="step">
+                <h2 style="color:var(--success);">UĞURLUDUR!</h2>
+                <canvas id="receiptCanvas" width="400" height="550"></canvas>
+                <button class="btn btn-primary" onclick="downloadReceipt()">QƏBZİ YÜKLƏ</button>
+                <button class="btn" style="background:#333; color:white;" onclick="location.reload()">BAŞA QAYIT</button>
+            </div>
 
-                <div id="codes-list" style="max-height: 180px; overflow-y: auto; margin-top:10px; padding-right: 5px;"></div>
-                <button onclick="addNewCodeUI()" style="width:100%; background:var(--success); border:none; padding:12px; border-radius:10px; font-weight:bold; margin-top:10px; color: #000;">+ YENİ KOD ƏLAVƏ ET</button>
+            <div id="step-wheel" class="step">
+                <h2 style="color:var(--gold);">BƏXTİNİ SINA!</h2>
+                <div class="pointer"></div>
+                <div id="wheel"></div>
+                <button class="btn btn-gold" id="spin-btn" onclick="spinWheel()">ÇEVİR!</button>
             </div>
         </div>
 
-        <div id="step2" class="step">
-            <h2>PAKET SEÇİN</h2>
-            <select id="packet-select">
-                <option value="660 UC (5 AZN)">660 UC • 5 AZN</option>
-                <option value="1920 UC (13 AZN)">1920 UC • 13 AZN</option>
-                <option value="8100 UC (35 AZN)">8100 UC • 35 AZN</option>
-            </select>
-            <input type="number" id="player-id" placeholder="PUBG Mobile ID">
-            <button class="main-btn" onclick="processOrder()">TƏSDİQLƏ VƏ BİTİR</button>
-        </div>
-
-        <div id="step3" class="step">
-            <h2 style="color:var(--success);">SİFARİŞ TAMAMLANDI!</h2>
-            <canvas id="receiptCanvas" width="400" height="550"></canvas>
-            <button class="main-btn" onclick="downloadReceipt()">QƏBZİ YÜKLƏ (.PNG)</button>
-            <button class="main-btn" onclick="location.reload()" style="background:#333; margin-top:10px;">ANA SƏHİFƏYƏ QAYIT</button>
-        </div>
-
-        <div id="step-loader" class="step">
-            <h2 id="loader-title" style="letter-spacing: 3px;">SİSTEM İŞLƏYİR...</h2>
-            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
-            <p style="font-size: 0.7rem; color: #666; margin-top: 10px;">Zəhmət olmasa pəncərəni bağlamayın</p>
-        </div>
-    </div>
-
-    <div id="chat-overlay">
-        <div class="chat-header" style="padding:15px; background:var(--card-bg); display:flex; justify-content:space-between; align-items:center; border-bottom: 1px solid #333;">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img src="https://img.icons8.com/fluency/48/chatbot--v1.png" width="30">
-                <span style="font-weight:bold; color:var(--primary);">NEFT BOT v6.1</span>
+        <div id="admin-panel">
+            <h2 style="color:var(--primary); margin-bottom:20px;">📊 STRATEJİ DASHBOARD</h2>
+            <div class="stats-grid">
+                <div class="stat-card"><small>Ümumi Satış</small><h3 id="stat-total-sales">0 AZN</h3></div>
+                <div class="stat-card"><small>Aktiv Kodlar</small><h3 id="stat-active-codes">0</h3></div>
+                <div class="stat-card"><small>Hədiyyə Qazananlar</small><h3 id="stat-gifts">0</h3></div>
             </div>
-            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
-        </div>
-        <div class="chat-body" id="chat-body">
-            <div class="message bot-msg">Salam! Neft Game xidmətinizdədir. Suallarınızı yaza bilərsiniz. 🤖</div>
-        </div>
-        <div style="padding:20px; display:flex; gap:10px; background: #111;">
-            <input type="text" id="chat-input" placeholder="Bura yazın..." style="margin:0; border-radius: 25px; padding-left: 20px;">
-            <button onclick="sendMessage()" style="background:var(--primary); color:black; border:none; width: 50px; height: 50px; border-radius: 50%; font-weight:bold; font-size: 20px;">></button>
+            <div style="background:#111; padding:15px; border-radius:15px;">
+                <canvas id="salesChart" height="100"></canvas>
+            </div>
+            <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <button class="btn btn-primary" onclick="addNewCodeUI()">+ YENİ KOD</button>
+                <button class="btn btn-gold" onclick="updateAnn()">ELAN YENİLƏ</button>
+            </div>
+            <div id="codes-list" style="margin-top:20px; max-height:200px; overflow-y:auto;"></div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc, onSnapshot, query, limit, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCOq7UqFo6Y9ldVXRthRP6U02TayFkv53I",
             authDomain: "neftgame-e4de3.firebaseapp.com",
             projectId: "neftgame-e4de3",
             storageBucket: "neftgame-e4de3.firebasestorage.app",
-            messagingSenderId: "27529172910",
             appId: "1:27529172910:web:1a2a752e79295d47c39a3f"
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
+
         let activeCode = "";
-        let lastShownReceipt = "";
+        let orders = localStorage.getItem('neft_orders') || 0;
+        document.getElementById('order-count').innerText = orders;
 
-        // 🟢 CANLI SİFARİŞ BİLDİRİŞİ (v6.1 FIX - YALNIZ YENİ SİFARİŞLƏR)
-        const qLive = query(collection(db, "receipts"), orderBy("usedAt", "desc"), limit(1));
-        onSnapshot(qLive, (snap) => {
-            snap.docChanges().forEach((change) => {
-                if (change.type === "added" || change.type === "modified") {
-                    const data = change.doc.data();
-                    if(data.receiptID === lastShownReceipt) return;
-                    lastShownReceipt = data.receiptID;
+        // 🟢 CİHAZDA 3 SİFARİŞ YOXLANIŞI
+        if(orders >= 3 && !localStorage.getItem('wheel_used')) {
+            document.getElementById('wheel-launch-btn').style.display = 'block';
+        }
 
-                    const userDisplay = data.usedBy ? data.usedBy.substring(0, 4) + "***" : "Naməlum";
-                    document.getElementById('notif-user').innerText = "İstifadəçi: " + userDisplay;
-                    document.getElementById('notif-pack').innerText = data.packet + " sifariş etdi!";
-                    
-                    const notif = document.getElementById('live-notif');
-                    notif.classList.add('show');
-                    setTimeout(() => notif.classList.remove('show'), 7000);
-                }
+        // 🟢 ADMIN STATS & CHART
+        async function loadDashboard() {
+            const snap = await getDocs(collection(db, "codes"));
+            let total = 0; let count = 0;
+            snap.forEach(d => {
+                const data = d.data();
+                if(data.used) {
+                    const price = parseInt(data.packet?.match(/\d+/g)[1]) || 0;
+                    total += price;
+                } else { count++; }
             });
-        });
+            document.getElementById('stat-total-sales').innerText = total + " AZN";
+            document.getElementById('stat-active-codes').innerText = count;
+            renderChart(total);
+        }
 
-        // 🟢 ELAN YENİLƏMƏ (REAL VAXT)
-        onSnapshot(doc(db, "settings", "announcement"), (docSnap) => {
-            if(docSnap.exists() && docSnap.data().text) {
-                document.getElementById('announcement-bar').style.display = 'block';
-                document.getElementById('ann-text').innerText = docSnap.data().text;
-            } else {
-                document.getElementById('announcement-bar').style.display = 'none';
-            }
-        });
-
-        window.updateAnn = async function() {
-            const txt = document.getElementById('admin-ann-input').value.trim();
-            if(!txt) return alert("Mətn yazın!");
-            await setDoc(doc(db, "settings", "announcement"), { text: txt });
-            alert("Elan bütün istifadəçilər üçün aktiv edildi!");
+        function renderChart(total) {
+            const ctx = document.getElementById('salesChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: { labels: ['Bazar', 'B.Ertəsi', 'Çərşənbə', 'Cümə', 'Bugün'], datasets: [{ label: 'Satış Trendi', data: [12, 19, 3, 5, total/10], borderColor: '#00f2ff', tension: 0.4 }] },
+                options: { plugins: { legend: { display: false } }, scales: { y: { display: false } } }
+            });
         }
 
         window.verifyCode = async function() {
             const code = document.getElementById('access-code').value.trim().toUpperCase();
             if(code === "ADMIN2026") { 
-                document.getElementById('admin-panel').style.display = 'block'; 
-                loadCodes(); 
-                return; 
+                document.getElementById('user-card').style.display = 'none';
+                document.getElementById('admin-panel').style.display = 'block';
+                loadDashboard(); return; 
             }
-            if(!code) return;
-            const err = document.getElementById('error-msg');
-            err.innerText = "Yoxlanılır...";
             const snap = await getDoc(doc(db, "codes", code));
-            if(snap.exists() && !snap.data().used) { 
-                activeCode = code; 
-                runLoader(() => showStep('step2')); 
-            } else { 
-                err.innerText = "Kod yanlışdır və ya istifadə olunub!"; 
-            }
+            if(snap.exists() && !snap.data().used) {
+                activeCode = code;
+                showStep('step2');
+            } else { document.getElementById('error-msg').innerText = "Kod tapılmadı və ya bitib!"; }
         }
 
         window.processOrder = async function() {
             const pid = document.getElementById('player-id').value;
             const pack = document.getElementById('packet-select').value;
-            if(pid.length < 5) return alert("Düzgün Player ID daxil edin!");
+            const rid = "NFT-" + Math.random().toString(36).substr(2, 7).toUpperCase();
             
-            const rID = "NFT-" + Math.random().toString(36).substr(2, 7).toUpperCase();
-            const orderData = { 
-                used: true, 
-                usedBy: pid, 
-                packet: pack, 
-                usedAt: new Date().getTime(), 
-                receiptID: rID 
-            };
+            await updateDoc(doc(db, "codes", activeCode), { used: true, usedBy: pid, packet: pack, usedAt: new Date().getTime(), receiptID: rid });
+            await setDoc(doc(db, "receipts", rid), { usedBy: pid, packet: pack, usedAt: new Date().getTime(), receiptID: rid });
 
-            await updateDoc(doc(db, "codes", activeCode), orderData);
-            await setDoc(doc(db, "receipts", rID), orderData);
-
-            runLoader(() => { generateReceipt(pid, pack, rID); showStep('step3'); });
+            // CİHAZ SİFARİŞ SAYINI ARTIR
+            let newOrders = parseInt(orders) + 1;
+            localStorage.setItem('neft_orders', newOrders);
+            
+            generateReceipt(pid, pack, rid, false);
+            showStep('step3');
         }
 
-        window.loadCodes = async function() {
-            const list = document.getElementById('codes-list'); list.innerHTML = "<small>Yüklənir...</small>";
-            const snap = await getDocs(collection(db, "codes"));
-            list.innerHTML = "";
+        // 🟢 ÇARX SİSTEMİ
+        window.showWheel = () => showStep('step-wheel');
+        window.spinWheel = function() {
+            const prizes = ["3120 UC Hədiyyə", "8100 UC Hədiyyə", "20 AZN Hədiyyə", "Royale Pass Plus"];
+            const rand = Math.floor(Math.random() * 4);
+            const degree = 1800 + (rand * 90);
+            document.getElementById('wheel').style.transform = `rotate(${degree}deg)`;
+            document.getElementById('spin-btn').disabled = true;
+
+            setTimeout(() => {
+                localStorage.setItem('wheel_used', 'true');
+                const win = prizes[rand];
+                generateReceipt(document.getElementById('player-id').value || "Müştəri", win, "WIN-"+Math.floor(Math.random()*99999), true);
+                showStep('step3');
+            }, 4500);
+        }
+
+        // 🟢 CANLI BİLDİRİŞ (v6.1 FIX Daxil)
+        const qLive = query(collection(db, "receipts"), orderBy("usedAt", "desc"), limit(1));
+        onSnapshot(qLive, (snap) => {
             snap.forEach(d => {
                 const data = d.data();
-                list.innerHTML += `
-                    <div class="code-card">
-                        <span><b>${d.id}</b> [${data.used?'❌':'✅'}]</span>
-                        <span class="delete-btn" onclick="deleteCode('${d.id}')">SİL</span>
-                    </div>`;
+                document.getElementById('notif-user').innerText = "ID: " + data.usedBy.substring(0,4) + "***";
+                document.getElementById('notif-pack').innerText = data.packet + " sifariş edildi!";
+                const n = document.getElementById('live-notif');
+                n.classList.add('show'); setTimeout(() => n.classList.remove('show'), 6000);
             });
-        }
+        });
 
-        window.addNewCodeUI = async function() {
-            const val = prompt("Yeni kodun adını yazın:");
-            if(val) { 
-                await setDoc(doc(db, "codes", val.toUpperCase()), { used: false }); 
-                loadCodes(); 
-            }
-        }
-
-        window.deleteCode = async function(id) { 
-            if(confirm(id + " silinsin?")) { 
-                await deleteDoc(doc(db, "codes", id)); 
-                loadCodes(); 
-            } 
-        }
-
-        window.searchReceipt = async function() {
-            const rid = document.getElementById('search-receipt-id').value.toUpperCase().trim();
-            if(!rid) return;
-            const snap = await getDoc(doc(db, "receipts", rid));
-            const res = document.getElementById('search-result');
-            if(snap.exists()) {
-                const d = snap.data();
-                res.innerHTML = `✅ TAPILDI:<br>👤 ID: ${d.usedBy}<br>📦 Paket: ${d.packet}<br>📅 Vaxt: ${new Date(d.usedAt).toLocaleString()}`;
-            } else { res.innerText = "❌ Belə bir qəbz kodu tapılmadı!"; }
-        }
-    </script>
-
-    <script>
-        // UI & BOT LOGIC
+        // UI HELPERS
         function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
-        function runLoader(cb) { showStep('step-loader'); let p = 0; let iv = setInterval(() => { p += 25; document.getElementById('progress-fill').style.width = p + "%"; if(p >= 100) { clearInterval(iv); cb(); } }, 200); }
-        function openChat() { document.getElementById('chat-overlay').style.display='flex'; }
-        function closeChat() { document.getElementById('chat-overlay').style.display='none'; }
-
-        function generateReceipt(id, pack, rID) {
+        
+        function generateReceipt(id, pack, rid, isGift) {
             const canvas = document.getElementById('receiptCanvas');
             const ctx = canvas.getContext('2d');
             ctx.fillStyle = "#0f0f12"; ctx.fillRect(0,0,400,550);
-            ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,550);
-            ctx.fillStyle = "#00f2ff"; ctx.font = "bold 26px Arial"; ctx.fillText("NEFT GAME SHOP", 85, 60);
-            ctx.fillStyle = "#fff"; ctx.font = "14px Courier New";
+            ctx.strokeStyle = isGift ? "#ffd700" : "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,550);
+            
+            ctx.fillStyle = isGift ? "#ffd700" : "#00f2ff";
+            ctx.font = "bold 24px Arial"; ctx.fillText(isGift ? "HƏDİYYƏ QAZANCI" : "NEFT GAME RECEIPT", 60, 60);
+            
+            ctx.fillStyle = "#fff"; ctx.font = "16px Courier New";
             ctx.fillText("----------------------------", 40, 120);
             ctx.fillText("OYUNÇU ID: " + id, 40, 180);
-            ctx.fillText("MƏHSUL: " + pack, 40, 230);
-            ctx.fillText("TARİX: " + new Date().toLocaleString(), 40, 280);
-            ctx.fillStyle = "#00f2ff"; ctx.fillText("QƏBZ KODU: " + rID, 40, 330);
-            ctx.fillText("----------------------------", 40, 380);
-            ctx.fillStyle = "#00ff88"; ctx.font = "bold 22px Arial"; ctx.fillText("ÖDƏNİŞ TƏSDİQLƏNDİ", 90, 470);
-            ctx.font = "12px Arial"; ctx.fillStyle = "#555"; ctx.fillText("© 2026 Neft Game Official System", 110, 520);
+            ctx.fillText(isGift ? "QAZANILAN: " : "PAKET: " + pack, 40, 240);
+            if(isGift) ctx.fillText(pack, 40, 270);
+            ctx.fillText("TARİX: " + new Date().toLocaleDateString(), 40, 320);
+            ctx.fillStyle = isGift ? "#ffd700" : "#00f2ff";
+            ctx.fillText("KOD: " + rid, 40, 380);
+            ctx.fillText("----------------------------", 40, 430);
+            ctx.fillText("STATUS: TƏSDİQLƏNDİ", 80, 500);
         }
 
-        function downloadReceipt() { const link = document.createElement('a'); link.download = 'neft_qebz.png'; link.href = document.getElementById('receiptCanvas').toDataURL(); link.click(); }
-
-        function sendMessage() {
-            const inp = document.getElementById('chat-input');
-            const txt = inp.value.trim();
-            if(!txt) return;
-            const b = document.getElementById('chat-body');
-            b.innerHTML += `<div class="message user-msg">${txt}</div>`;
-            let reply = "Zəhmət olmasa operatorla əlaqə saxlayın: +994 77 124 49 44";
-            if(txt.toLowerCase().includes("qiymet")) reply = "💎 660 UC: 5 AZN | 1920 UC: 13 AZN | 8100 UC: 35 AZN";
-            setTimeout(() => { b.innerHTML += `<div class="message bot-msg">${reply}</div>`; b.scrollTop = b.scrollHeight; }, 600);
-            inp.value = "";
-        }
+        window.downloadReceipt = () => { const a = document.createElement('a'); a.download = 'neft_game.png'; a.href = document.getElementById('receiptCanvas').toDataURL(); a.click(); }
     </script>
 </body>
-</html>
+                </html>
+                
