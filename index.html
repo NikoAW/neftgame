@@ -1,121 +1,84 @@
 <!DOCTYPE html>
-<html lang="az" translate="no">
+<html lang="az">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neft Game - Royal v7.0</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Neft Game v7.5 - Stabil</title>
     <style>
-        :root {
-            --primary: #00f2ff; --secondary: #7000ff; --bg: #0a0a0c;
-            --card-bg: #16161a; --text: #ffffff; --error: #ff4d4d;
-            --success: #00ff88; --gold: #ffd700;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+        :root { --p: #00f2ff; --s: #7000ff; --bg: #0a0a0c; --card: #16161a; --txt: #fff; --gold: #ffd700; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: sans-serif; }
+        body { background: var(--bg); color: var(--txt); display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+        .container { width: 95%; max-width: 420px; background: var(--card); padding: 25px; border-radius: 20px; border: 1px solid #333; text-align: center; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #222; border: 1px solid #444; color: #fff; border-radius: 10px; outline: none; }
+        .btn { width: 100%; padding: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 10px; }
+        .btn-p { background: linear-gradient(45deg, var(--s), var(--p)); color: #fff; }
+        .btn-gold { background: var(--gold); color: #000; display: none; }
         
-        /* BANNER & NOTIF */
-        #announcement-bar { position: fixed; top: 0; width: 100%; background: linear-gradient(90deg, #7000ff, #00f2ff); color: #000; font-weight: bold; padding: 6px; z-index: 1000; overflow: hidden; font-size: 13px; display:none; }
-        .marquee { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; }
-        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-
-        #live-notif { position: fixed; bottom: 20px; left: -350px; background: var(--card-bg); border: 1px solid var(--primary); padding: 12px; border-radius: 12px; transition: 0.5s; z-index: 1001; display:flex; gap:10px; align-items:center; }
-        #live-notif.show { left: 20px; }
-
-        /* MAIN UI */
-        .container { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
-        .main-card { width: 100%; max-width: 450px; background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
-        
-        /* WHEEL STYLE */
-        #wheel-container { display: none; margin-top: 20px; position: relative; }
-        #wheel { width: 300px; height: 300px; border-radius: 50%; border: 8px solid var(--gold); transition: transform 4s cubic-bezier(0.15, 0, 0.15, 1); background: conic-gradient(#7000ff 0% 25%, #00f2ff 25% 50%, #7000ff 50% 75%, #00f2ff 75% 100%); position: relative; }
-        .pointer { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid var(--gold); z-index: 10; }
-
-        /* BUTTONS & INPUTS */
-        input, select { width: 100%; padding: 15px; margin: 10px 0; background: #222; border: 1px solid #333; border-radius: 12px; color: white; outline: none; }
-        .btn { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; margin-top: 10px; }
-        .btn-primary { background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; }
-        .btn-gold { background: linear-gradient(45deg, #b8860b, var(--gold)); color: black; margin-top: 20px; }
-
-        /* ADMIN DASHBOARD */
-        #admin-panel { display: none; width: 95%; max-width: 900px; background: #000; padding: 20px; border-radius: 20px; border: 2px solid var(--primary); margin-top: 20px; }
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
-        .stat-card { background: #111; padding: 15px; border-radius: 12px; border-left: 4px solid var(--primary); }
-        
+        /* STEPS */
         .step { display: none; } .step.active { display: block; }
-        canvas { max-width: 100%; border-radius: 10px; margin-top: 10px; }
+        
+        /* ADMIN */
+        #admin-panel { display: none; text-align: left; background: #000; padding: 15px; border-radius: 15px; border: 1px solid var(--p); margin-top: 15px; }
+        .code-item { background: #111; padding: 8px; margin-bottom: 5px; border-radius: 5px; display: flex; justify-content: space-between; font-size: 12px; border-left: 3px solid var(--p); }
+        
+        /* WHEEL */
+        #wheel { width: 250px; height: 250px; border-radius: 50%; border: 5px solid var(--gold); margin: 20px auto; transition: 4s cubic-bezier(0.1, 0, 0.1, 1); background: conic-gradient(var(--s) 0 90deg, var(--p) 90deg 180deg, var(--s) 180deg 270deg, var(--p) 270deg 360deg); position: relative; }
+        
+        /* NOTIF */
+        #live-notif { position: fixed; bottom: 20px; left: -300px; background: var(--card); border: 1px solid var(--p); padding: 10px; border-radius: 10px; transition: 0.5s; z-index: 999; }
+        #live-notif.show { left: 20px; }
     </style>
 </head>
 <body>
 
-    <div id="announcement-bar"><div class="marquee" id="ann-text">YENİ: 3 SİFARİŞ VERƏNƏ ÖZƏL HƏDİYYƏ ÇARXI AKTİVLƏŞİR! 🎁</div></div>
-
     <div id="live-notif">
-        <div style="background:var(--primary); width:35px; height:35px; border-radius:50%; color:black; display:flex; align-items:center; justify-content:center; font-weight:bold;">!</div>
-        <div style="font-size:12px;"><b id="notif-user">ID: ---</b><br><span id="notif-pack" style="color:var(--success);">Sifariş edildi!</span></div>
+        <small id="notif-txt" style="color:var(--p);">Yüklənir...</small>
     </div>
 
     <div class="container">
-        <div class="main-card" id="user-card">
-            <div id="step1" class="step active">
-                <img width="64" src="https://img.icons8.com/fluency/96/chatbot--v1.png"/>
-                <h2 style="color:var(--primary); margin: 15px 0;">NEFT GAME</h2>
-                <p style="font-size:0.8rem; color:#888;">Cihaz Statusu: <span id="order-count" style="color:var(--success);">0</span>/3 Sifariş</p>
-                <input type="text" id="access-code" placeholder="Aktivasiya Kodu">
-                <p id="error-msg" style="color:var(--error); font-size:0.8rem;"></p>
-                <button class="btn btn-primary" onclick="verifyCode()">DAXİL OL</button>
-                <div id="wheel-launch-btn" style="display:none;">
-                    <button class="btn btn-gold" onclick="showWheel()">🎡 HƏDİYYƏ ÇARXINI ÇEVİR!</button>
-                </div>
-            </div>
+        <div id="step1" class="step active">
+            <h2 style="color:var(--p); margin-bottom: 15px;">NEFT GAME</h2>
+            <p style="font-size: 11px; margin-bottom: 10px;">Cihaz Sifarişləri: <span id="ord-count">0</span>/3</p>
+            <input type="text" id="access-code" placeholder="Kodu daxil edin">
+            <button class="btn btn-p" onclick="verifyCode()">Giriş</button>
+            <button id="gift-btn" class="btn btn-gold" onclick="openWheel()">🎡 HƏDİYYƏ ÇARXI</button>
 
-            <div id="step2" class="step">
-                <h2>UC SİFARİŞİ</h2>
-                <select id="packet-select">
-                    <option value="660 UC (5 AZN)">660 UC • 5 AZN</option>
-                    <option value="1920 UC (13 AZN)">1920 UC • 13 AZN</option>
-                    <option value="8100 UC (35 AZN)">8100 UC • 35 AZN</option>
-                </select>
-                <input type="number" id="player-id" placeholder="Oyunçu ID">
-                <button class="btn btn-primary" onclick="processOrder()">TƏSDİQLƏ</button>
-            </div>
-
-            <div id="step3" class="step">
-                <h2 style="color:var(--success);">UĞURLUDUR!</h2>
-                <canvas id="receiptCanvas" width="400" height="550"></canvas>
-                <button class="btn btn-primary" onclick="downloadReceipt()">QƏBZİ YÜKLƏ</button>
-                <button class="btn" style="background:#333; color:white;" onclick="location.reload()">BAŞA QAYIT</button>
-            </div>
-
-            <div id="step-wheel" class="step">
-                <h2 style="color:var(--gold);">BƏXTİNİ SINA!</h2>
-                <div class="pointer"></div>
-                <div id="wheel"></div>
-                <button class="btn btn-gold" id="spin-btn" onclick="spinWheel()">ÇEVİR!</button>
+            <div id="admin-panel">
+                <p style="color:var(--p); font-weight: bold; font-size: 12px; margin-bottom: 10px;">ADMİN PANEL</p>
+                <div id="stats" style="font-size: 10px; margin-bottom: 10px; color: #aaa;"></div>
+                <input type="text" id="new-code-val" placeholder="Yeni kod" style="padding:5px;">
+                <button onclick="addNewCode()" style="width:100%; background:var(--p); border:none; padding:5px; border-radius:5px; margin-bottom:10px;">+ ƏLAVƏ ET</button>
+                <div id="codes-list" style="max-height: 150px; overflow-y: auto;"></div>
             </div>
         </div>
 
-        <div id="admin-panel">
-            <h2 style="color:var(--primary); margin-bottom:20px;">📊 STRATEJİ DASHBOARD</h2>
-            <div class="stats-grid">
-                <div class="stat-card"><small>Ümumi Satış</small><h3 id="stat-total-sales">0 AZN</h3></div>
-                <div class="stat-card"><small>Aktiv Kodlar</small><h3 id="stat-active-codes">0</h3></div>
-                <div class="stat-card"><small>Hədiyyə Qazananlar</small><h3 id="stat-gifts">0</h3></div>
-            </div>
-            <div style="background:#111; padding:15px; border-radius:15px;">
-                <canvas id="salesChart" height="100"></canvas>
-            </div>
-            <div style="margin-top:20px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                <button class="btn btn-primary" onclick="addNewCodeUI()">+ YENİ KOD</button>
-                <button class="btn btn-gold" onclick="updateAnn()">ELAN YENİLƏ</button>
-            </div>
-            <div id="codes-list" style="margin-top:20px; max-height:200px; overflow-y:auto;"></div>
+        <div id="step2" class="step">
+            <h3>SİFARİŞ VER</h3>
+            <select id="pack">
+                <option value="660 UC (5 AZN)">660 UC - 5 AZN</option>
+                <option value="1920 UC (13 AZN)">1920 UC - 13 AZN</option>
+                <option value="8100 UC (35 AZN)">8100 UC - 35 AZN</option>
+            </select>
+            <input type="number" id="pid" placeholder="Oyunçu ID">
+            <button class="btn btn-p" onclick="sendOrder()">Təsdiqlə</button>
+        </div>
+
+        <div id="step-wheel" class="step">
+            <h2 style="color:var(--gold);">BƏXTİNİ SINA</h2>
+            <div id="wheel"></div>
+            <button class="btn btn-gold" style="display:block;" id="spin-btn" onclick="spinNow()">Fırlat!</button>
+        </div>
+
+        <div id="step4" class="step">
+            <canvas id="cvs" width="400" height="500" style="width:100%; border-radius: 10px;"></canvas>
+            <button class="btn btn-p" onclick="downloadCvs()">Qəbzi Yüklə</button>
+            <button class="btn" style="background:#444; color:#fff;" onclick="location.reload()">Geri</button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc, onSnapshot, query, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCOq7UqFo6Y9ldVXRthRP6U02TayFkv53I",
@@ -126,126 +89,110 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
         let activeCode = "";
-        let orders = localStorage.getItem('neft_orders') || 0;
-        document.getElementById('order-count').innerText = orders;
 
-        // 🟢 CİHAZDA 3 SİFARİŞ YOXLANIŞI
-        if(orders >= 3 && !localStorage.getItem('wheel_used')) {
-            document.getElementById('wheel-launch-btn').style.display = 'block';
-        }
-
-        // 🟢 ADMIN STATS & CHART
-        async function loadDashboard() {
-            const snap = await getDocs(collection(db, "codes"));
-            let total = 0; let count = 0;
-            snap.forEach(d => {
-                const data = d.data();
-                if(data.used) {
-                    const price = parseInt(data.packet?.match(/\d+/g)[1]) || 0;
-                    total += price;
-                } else { count++; }
-            });
-            document.getElementById('stat-total-sales').innerText = total + " AZN";
-            document.getElementById('stat-active-codes').innerText = count;
-            renderChart(total);
-        }
-
-        function renderChart(total) {
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: { labels: ['Bazar', 'B.Ertəsi', 'Çərşənbə', 'Cümə', 'Bugün'], datasets: [{ label: 'Satış Trendi', data: [12, 19, 3, 5, total/10], borderColor: '#00f2ff', tension: 0.4 }] },
-                options: { plugins: { legend: { display: false } }, scales: { y: { display: false } } }
-            });
+        // Cihaz takibi
+        let count = localStorage.getItem('order_count') || 0;
+        document.getElementById('ord-count').innerText = count;
+        if(count >= 3 && !localStorage.getItem('wheel_done')) {
+            document.getElementById('gift-btn').style.display = 'block';
         }
 
         window.verifyCode = async function() {
-            const code = document.getElementById('access-code').value.trim().toUpperCase();
-            if(code === "ADMIN2026") { 
-                document.getElementById('user-card').style.display = 'none';
+            const val = document.getElementById('access-code').value.trim().toUpperCase();
+            if(val === "ADMIN2026") {
                 document.getElementById('admin-panel').style.display = 'block';
-                loadDashboard(); return; 
+                loadAdminData();
+                return;
             }
-            const snap = await getDoc(doc(db, "codes", code));
+            const snap = await getDoc(doc(db, "codes", val));
             if(snap.exists() && !snap.data().used) {
-                activeCode = code;
+                activeCode = val;
                 showStep('step2');
-            } else { document.getElementById('error-msg').innerText = "Kod tapılmadı və ya bitib!"; }
+            } else { alert("Kod yanlışdır!"); }
         }
 
-        window.processOrder = async function() {
-            const pid = document.getElementById('player-id').value;
-            const pack = document.getElementById('packet-select').value;
-            const rid = "NFT-" + Math.random().toString(36).substr(2, 7).toUpperCase();
+        window.sendOrder = async function() {
+            const id = document.getElementById('pid').value;
+            const p = document.getElementById('pack').value;
+            if(!id) return;
+            const rid = "NFT-" + Math.floor(Math.random()*999999);
+            const data = { used: true, usedBy: id, packet: p, usedAt: new Date().getTime(), receiptID: rid };
             
-            await updateDoc(doc(db, "codes", activeCode), { used: true, usedBy: pid, packet: pack, usedAt: new Date().getTime(), receiptID: rid });
-            await setDoc(doc(db, "receipts", rid), { usedBy: pid, packet: pack, usedAt: new Date().getTime(), receiptID: rid });
-
-            // CİHAZ SİFARİŞ SAYINI ARTIR
-            let newOrders = parseInt(orders) + 1;
-            localStorage.setItem('neft_orders', newOrders);
+            await updateDoc(doc(db, "codes", activeCode), data);
+            await setDoc(doc(db, "receipts", rid), data);
             
-            generateReceipt(pid, pack, rid, false);
-            showStep('step3');
+            let newCount = parseInt(count) + 1;
+            localStorage.setItem('order_count', newCount);
+            
+            drawReceipt(id, p, rid, false);
+            showStep('step4');
         }
 
-        // 🟢 ÇARX SİSTEMİ
-        window.showWheel = () => showStep('step-wheel');
-        window.spinWheel = function() {
+        // ÇARX MƏNTİQİ
+        window.openWheel = () => showStep('step-wheel');
+        window.spinNow = function() {
             const prizes = ["3120 UC Hədiyyə", "8100 UC Hədiyyə", "20 AZN Hədiyyə", "Royale Pass Plus"];
-            const rand = Math.floor(Math.random() * 4);
-            const degree = 1800 + (rand * 90);
-            document.getElementById('wheel').style.transform = `rotate(${degree}deg)`;
+            const r = Math.floor(Math.random()*4);
+            document.getElementById('wheel').style.transform = `rotate(${2000 + (r*90)}deg)`;
             document.getElementById('spin-btn').disabled = true;
-
+            
             setTimeout(() => {
-                localStorage.setItem('wheel_used', 'true');
-                const win = prizes[rand];
-                generateReceipt(document.getElementById('player-id').value || "Müştəri", win, "WIN-"+Math.floor(Math.random()*99999), true);
-                showStep('step3');
-            }, 4500);
+                localStorage.setItem('wheel_done', 'true');
+                drawReceipt("QALİB", prizes[r], "WIN-"+Math.floor(Math.random()*999), true);
+                showStep('step4');
+            }, 4100);
         }
 
-        // 🟢 CANLI BİLDİRİŞ (v6.1 FIX Daxil)
-        const qLive = query(collection(db, "receipts"), orderBy("usedAt", "desc"), limit(1));
-        onSnapshot(qLive, (snap) => {
+        // ADMİN FUNKSİYALARI (TAM BƏRPA)
+        async function loadAdminData() {
+            const snap = await getDocs(collection(db, "codes"));
+            const list = document.getElementById('codes-list');
+            list.innerHTML = "";
+            let totalAZN = 0;
             snap.forEach(d => {
                 const data = d.data();
-                document.getElementById('notif-user').innerText = "ID: " + data.usedBy.substring(0,4) + "***";
-                document.getElementById('notif-pack').innerText = data.packet + " sifariş edildi!";
-                const n = document.getElementById('live-notif');
-                n.classList.add('show'); setTimeout(() => n.classList.remove('show'), 6000);
+                if(data.used) totalAZN += 5; // Sadə hesablama
+                list.innerHTML += `<div class="code-item"><span>${d.id} [${data.used?'X':'OK'}]</span> <b onclick="delCode('${d.id}')" style="color:red">X</b></div>`;
+            });
+            document.getElementById('stats').innerText = "Təxmini qazanc: " + totalAZN + " AZN";
+        }
+
+        window.addNewCode = async function() {
+            const v = document.getElementById('new-code-val').value.toUpperCase();
+            if(v) { await setDoc(doc(db, "codes", v), { used: false }); loadAdminData(); }
+        }
+
+        window.delCode = async function(id) {
+            if(confirm("Silinsin?")) { await deleteDoc(doc(db, "codes", id)); loadAdminData(); }
+        }
+
+        // CANLI BİLDİRİŞ (v6.1-dən gələn stabil versiya)
+        const q = query(collection(db, "receipts"), orderBy("usedAt", "desc"), limit(1));
+        onSnapshot(q, (s) => {
+            s.forEach(d => {
+                document.getElementById('notif-txt').innerText = d.data().usedBy.substr(0,4) + "*** " + d.data().packet + " aldı!";
+                document.getElementById('live-notif').classList.add('show');
+                setTimeout(() => document.getElementById('live-notif').classList.remove('show'), 5000);
             });
         });
 
-        // UI HELPERS
+        // UI
         function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
         
-        function generateReceipt(id, pack, rid, isGift) {
-            const canvas = document.getElementById('receiptCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = "#0f0f12"; ctx.fillRect(0,0,400,550);
-            ctx.strokeStyle = isGift ? "#ffd700" : "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,550);
-            
-            ctx.fillStyle = isGift ? "#ffd700" : "#00f2ff";
-            ctx.font = "bold 24px Arial"; ctx.fillText(isGift ? "HƏDİYYƏ QAZANCI" : "NEFT GAME RECEIPT", 60, 60);
-            
-            ctx.fillStyle = "#fff"; ctx.font = "16px Courier New";
-            ctx.fillText("----------------------------", 40, 120);
-            ctx.fillText("OYUNÇU ID: " + id, 40, 180);
-            ctx.fillText(isGift ? "QAZANILAN: " : "PAKET: " + pack, 40, 240);
-            if(isGift) ctx.fillText(pack, 40, 270);
-            ctx.fillText("TARİX: " + new Date().toLocaleDateString(), 40, 320);
-            ctx.fillStyle = isGift ? "#ffd700" : "#00f2ff";
-            ctx.fillText("KOD: " + rid, 40, 380);
-            ctx.fillText("----------------------------", 40, 430);
-            ctx.fillText("STATUS: TƏSDİQLƏNDİ", 80, 500);
+        function drawReceipt(id, p, rid, gift) {
+            const c = document.getElementById('cvs'); const x = c.getContext('2d');
+            x.fillStyle = "#111"; x.fillRect(0,0,400,500);
+            x.strokeStyle = gift ? "#ffd700" : "#00f2ff"; x.lineWidth = 10; x.strokeRect(0,0,400,500);
+            x.fillStyle = gift ? "#ffd700" : "#00f2ff"; x.font = "bold 20px Arial";
+            x.fillText(gift ? "HƏDİYYƏ QƏBZİ" : "SİFARİŞ QƏBZİ", 110, 50);
+            x.fillStyle = "#fff"; x.font = "16px Arial";
+            x.fillText("ID: " + id, 50, 150);
+            x.fillText("Paket: " + p, 50, 200);
+            x.fillText("Kod: " + rid, 50, 250);
+            x.fillText("Tarix: " + new Date().toLocaleDateString(), 50, 300);
         }
-
-        window.downloadReceipt = () => { const a = document.createElement('a'); a.download = 'neft_game.png'; a.href = document.getElementById('receiptCanvas').toDataURL(); a.click(); }
+        window.downloadCvs = () => { const a = document.createElement('a'); a.download = 'qebz.png'; a.href = document.getElementById('cvs').toDataURL(); a.click(); }
     </script>
 </body>
-                </html>
-                
+</html>
