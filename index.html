@@ -3,139 +3,166 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neft Game - Pro v7.0</title>
+    <title>Neft Game - Pro v7.1</title>
     <style>
         :root {
             --primary: #00f2ff; --secondary: #7000ff; --bg: #0a0a0c;
             --card-bg: #16161a; --text: #ffffff; --error: #ff4d4d;
-            --success: #00ff88; --chat-bot: #25252b; --chat-user: #7000ff;
+            --success: #00ff88; --orange: #ff9d00;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
         
-        /* LOADING SCREEN */
+        /* LOADING */
         #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { width: 60px; height: 60px; border: 5px solid #111; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #loading-text { margin-top: 20px; font-weight: bold; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; font-size: 0.8rem; }
+        #loading-text { margin-top: 20px; font-weight: bold; color: var(--primary); letter-spacing: 2px; font-size: 0.8rem; }
+
+        /* BANNER */
+        #announcement-bar { position: fixed; top: 0; width: 100%; background: linear-gradient(90deg, #7000ff, #00f2ff); color: #000; font-weight: bold; padding: 10px 0; font-size: 13px; z-index: 900; display: none; overflow: hidden; box-shadow: 0 5px 15px rgba(0,242,255,0.2); }
+        .marquee { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; padding-left: 100%; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
 
         /* MENU */
-        .menu-trigger { position: fixed; top: 45px; right: 20px; z-index: 1100; cursor: pointer; transition: 0.5s; }
+        .menu-trigger { position: fixed; top: 50px; right: 20px; z-index: 1100; cursor: pointer; transition: 0.5s; }
         .menu-trigger.open { transform: rotate(180deg); }
-        .menu-trigger img { width: 45px; height: 45px; }
+        .menu-trigger img { width: 45px; height: 45px; filter: drop-shadow(0 0 5px var(--primary)); }
 
-        #side-menu { position: fixed; top: 0; right: -80%; width: 80%; height: 100%; background: rgba(10, 10, 12, 0.98); border-left: 2px solid var(--primary); z-index: 1050; transition: 0.5s; padding-top: 100px; overflow-y: auto; }
+        #side-menu { position: fixed; top: 0; right: -80%; width: 80%; height: 100%; background: rgba(10, 10, 12, 0.98); border-left: 2px solid var(--primary); z-index: 1050; transition: 0.5s; padding-top: 100px; }
         #side-menu.active { right: 0; }
-        .menu-item { padding: 20px 25px; border-bottom: 1px solid #222; font-weight: bold; display: flex; align-items: center; gap: 15px; cursor: pointer; color: white; }
+        .menu-item { padding: 20px 25px; border-bottom: 1px solid #222; font-weight: bold; display: flex; align-items: center; gap: 15px; cursor: pointer; color: white; transition: 0.3s; }
+        .menu-item:active { background: rgba(0,242,255,0.1); }
 
         /* MAIN UI */
         .container { width: 92%; max-width: 420px; background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); text-align: center; position: relative; }
-        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #1a1a1e; border: 1px solid #333; border-radius: 12px; color: white; outline: none; }
-        .main-btn { width: 100%; padding: 18px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; }
+        h2 { color: var(--primary); letter-spacing: 2px; margin-bottom: 20px; font-size: 1.5rem; }
+        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #1a1a1e; border: 1px solid #333; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); }
+        .main-btn { width: 100%; padding: 18px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; font-size: 1rem; }
 
-        /* SECTIONS */
+        /* FULL SECTIONS */
         .full-screen-section { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; flex-direction: column; overflow-y: auto; }
-        .section-header { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); }
+        .section-header { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); position: sticky; top: 0; z-index: 10; }
         
-        /* ADMIN & PAYMENTS */
-        #admin-panel { display: none; margin-top: 25px; padding: 15px; background: #000; border: 2px solid var(--primary); border-radius: 15px; }
-        .payment-card { background: #111; padding: 12px; border-radius: 10px; margin-bottom: 10px; border: 1px solid #222; }
-        .neon-img { border: 2px solid var(--primary); box-shadow: 0 0 10px var(--primary); border-radius: 10px; max-width: 100%; margin-top: 10px; }
+        /* FAQ BOXES */
+        .faq-card { background: #1a1a1e; padding: 20px; border-radius: 15px; margin: 10px 20px; border-left: 4px solid var(--primary); text-align: left; }
+        .faq-card b { color: var(--primary); display: block; margin-bottom: 8px; font-size: 1.1rem; }
+        .faq-card p { color: #ccc; font-size: 0.9rem; line-height: 1.6; }
+
+        /* ADMIN */
+        #admin-panel { display: none; margin-top: 25px; padding: 20px; background: #000; border: 2px solid var(--orange); border-radius: 20px; }
+        .payment-card { background: #111; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; }
+        .neon-box { border: 2px solid var(--primary); box-shadow: 0 0 15px var(--primary); border-radius: 15px; max-width: 100%; margin-top: 15px; }
 
         .step { display: none; } .step.active { display: block; }
-        #announcement-bar { position: fixed; top: 0; width: 100%; background: linear-gradient(90deg, #7000ff, #00f2ff); color: #000; font-weight: bold; padding: 8px 0; font-size: 13px; z-index: 900; display: none; overflow: hidden; }
-        .marquee { display: inline-block; white-space: nowrap; animation: marquee 15s linear infinite; padding-left: 100%; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
     </style>
 </head>
 <body>
 
     <div id="loading-overlay">
         <div class="spinner"></div>
-        <div id="loading-text">SİSTEM YÜKLƏNİR...</div>
+        <div id="loading-text">YÜKLƏNİR...</div>
     </div>
 
-    <div id="announcement-bar"><div class="marquee" id="ann-text">XOŞ GƏLMİŞSİNİZ!</div></div>
+    <div id="announcement-bar"><div class="marquee" id="ann-text">YÜKLƏNİR...</div></div>
 
     <div class="menu-trigger" id="m-icon" onclick="toggleMenu()">
         <img src="https://img.icons8.com/3d-fluency/94/menu.png" alt="menu"/>
     </div>
 
     <div id="side-menu">
-        <div class="menu-item" onclick="openSection('sec-pay-confirm')" style="color:var(--success); border-left: 5px solid var(--success);">
+        <div class="menu-item" onclick="openSection('sec-pay-confirm')" style="color:var(--success);">
             <img width="30" src="https://img.icons8.com/fluency/48/checked-user-male.png"> ÖDƏNİŞİ TƏSDİQLƏ
         </div>
-        <div class="menu-item" onclick="openSection('sec-chat')"><img width="30" src="https://img.icons8.com/fluency/48/chatbot.png"> KÖMƏK (BOT)</div>
-        <div class="menu-item" onclick="openSection('sec-faq')"><img width="30" src="https://img.icons8.com/fluency/48/help.png"> SUALLAR</div>
-        <div class="menu-item" onclick="window.open('https://wa.me/994771244944')"><img width="30" src="https://img.icons8.com/color/48/whatsapp.png"> WHATSAPP</div>
-        <div class="menu-item" onclick="window.open('https://tiktok.com/@neftgame.az')"><img width="30" src="https://img.icons8.com/color/48/tiktok.png"> TİKTOK</div>
+        <div class="menu-item" onclick="openSection('sec-faq')">
+            <img width="30" src="https://img.icons8.com/fluency/48/help.png"> SUALLAR (FAQ)
+        </div>
+        <div class="menu-item" onclick="window.open('https://wa.me/994771244944')">
+            <img width="30" src="https://img.icons8.com/color/48/whatsapp.png"> WHATSAPP
+        </div>
+        <div class="menu-item" onclick="window.open('https://tiktok.com/@neftgame.az')">
+            <img width="30" src="https://img.icons8.com/color/48/tiktok.png"> TİKTOK
+        </div>
     </div>
 
-    <div id="sec-pay-confirm" class="full-screen-section">
+    <div id="sec-faq" class="full-screen-section">
         <div class="section-header">
-            <span style="color:var(--success); font-weight:bold;">✅ ÖDƏNİŞİN TƏSDİQLƏNMƏSİ</span>
-            <button onclick="closeSection('sec-pay-confirm')" style="background:none; border:none; color:white; font-size:2.5rem;">&times;</button>
+            <span style="color:var(--primary); font-weight:bold;">❓ TEZ-TEZ VERİLƏN SUALLAR</span>
+            <button onclick="closeSection('sec-faq')" style="background:none; border:none; color:white; font-size:2.5rem;">&times;</button>
         </div>
-        <div style="padding:20px;">
-            <p style="font-size: 0.8rem; color: #888; margin-bottom: 15px;">Bank transfer qəbzini və əlaqə məlumatlarını daxil edin:</p>
-            
-            <label style="font-size:0.7rem; color:var(--primary);">QƏBZİ SEÇİN (ŞƏKİL):</label>
-            <input type="file" id="pay-file" accept="image/*" style="padding: 10px;">
-
-            <label style="font-size:0.7rem; color:var(--primary); margin-top:10px; display:block;">ƏLAQƏ MƏLUMATLARINIZ (WhatsApp & TikTok):</label>
-            <textarea id="pay-contact" placeholder="Nümunə: +994 50 000 00 00 / @istifadeci_adi" rows="3"></textarea>
-
-            <button class="main-btn" id="pay-submit-btn" onclick="submitPayment()">TƏSDİQƏ GÖNDƏR</button>
-            
-            <div style="margin-top:20px; padding:15px; background: rgba(0,255,136,0.1); border-radius:10px; border:1px solid var(--success);">
-                <p style="font-size: 0.8rem; color: var(--success); line-height: 1.5;">
-                    ℹ️ 5-10 dəqiqə ərzində sistem tərəfindən avtomatik karta pul göndərdiyiniz təsdiqlənəcək.
-                </p>
+        <div style="padding-bottom: 30px;">
+            <div class="faq-card">
+                <b>UC nə vaxt hesaba gəlir?</b>
+                <p>Ödəniş təsdiqləndikdən sonra 5-20 dəqiqə ərzində UC birbaşa ID-nizə göndərilir.</p>
+            </div>
+            <div class="faq-card">
+                <b>Ban riski varmı?</b>
+                <p>Xeyr, bütün yükləmələr rəsmi "Midasbuy" və ya rəsmi tərəfdaşlar vasitəsilə edilir. Hesabınız 100% təhlükəsizdir.</p>
+            </div>
+            <div class="faq-card">
+                <b>Səhv ID daxil etsəm nə olar?</b>
+                <p>Sistem avtomatik işlədiyi üçün sifariş tamamlandıqdan sonra geri qaytarılma mümkün deyil. Lütfən ID-nizi iki dəfə yoxlayın.</p>
+            </div>
+            <div class="faq-card">
+                <b>Ödəniş qəbzini niyə yükləməliyəm?</b>
+                <p>Bu, ödənişin həqiqətən sizin tərəfinizdən edildiyini təsdiqləmək üçün vacibdir. Qəbz olmadan sifariş icra olunmur.</p>
             </div>
         </div>
     </div>
 
-    <div id="sec-chat" class="full-screen-section">
+    <div id="sec-pay-confirm" class="full-screen-section">
         <div class="section-header">
-            <span style="color:var(--primary); font-weight:bold;">🤖 NEFTBOT v7.0</span>
-            <button onclick="closeSection('sec-chat')" style="background:none; border:none; color:white; font-size:2.5rem;">&times;</button>
+            <span style="color:var(--success); font-weight:bold;">✅ ÖDƏNİŞ TƏSDİQİ</span>
+            <button onclick="closeSection('sec-pay-confirm')" style="background:none; border:none; color:white; font-size:2.5rem;">&times;</button>
         </div>
-        <div id="chat-body" style="flex-grow:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:12px;"></div>
-        <div style="padding:15px; background:#111; display:flex; gap:10px;">
-            <input type="text" id="chat-input" placeholder="Bir şey yaz...">
-            <button onclick="sendMessage()" style="background:var(--primary); border:none; width:55px; height:55px; border-radius:50%; color:black; font-weight:bold;">></button>
+        <div style="padding:20px;">
+            <label style="font-size:0.8rem; color:var(--primary);">QƏBZİN ŞƏKLİ (MƏCBURİ):</label>
+            <input type="file" id="pay-file" accept="image/*">
+            <label style="font-size:0.8rem; color:var(--primary); margin-top:10px; display:block;">ƏLAQƏ (WA & TİKTOK):</label>
+            <textarea id="pay-contact" placeholder="Məsələn: +994 50 123 45 67 / @neftuser" rows="3"></textarea>
+            <button class="main-btn" onclick="submitPayment()">GÖNDƏR</button>
+            <p style="margin-top:15px; font-size:0.8rem; color:var(--success); background:rgba(0,255,136,0.1); padding:10px; border-radius:10px;">
+                * 5-10 dəqiqə ərzində avtomatik yoxlanış tamamlanacaq. 1 saatdan bir göndərmə limiti mövcuddur.
+            </p>
         </div>
     </div>
 
     <div class="container">
         <div id="step1" class="step active">
-            <h2>SİSTEMƏ GİRİŞ</h2>
-            <input type="text" id="access-code" placeholder="Aktivasiya Kodunu Daxil Edin">
+            <h2>GİRİŞ</h2>
+            <input type="text" id="access-code" placeholder="Aktivasiya Kodu">
             <button class="main-btn" onclick="verifyCode()">DAXİL OL</button>
 
             <div id="admin-panel">
-                <h4 style="color:var(--primary);">📊 ADMIN STRATEJİ</h4>
-                <div style="display:flex; gap:5px; margin:10px 0;">
-                    <button onclick="showAdminTab('codes')" style="flex:1; background:#222; color:white; border:none; padding:8px; border-radius:5px;">Kodlar</button>
-                    <button onclick="showAdminTab('payments')" style="flex:1; background:var(--secondary); color:white; border:none; padding:8px; border-radius:5px;">Ödənişlər</button>
+                <h4 style="color:var(--orange);">🛠️ ADMİN İDARƏETMƏ</h4>
+                <div style="display:flex; gap:5px; margin:15px 0;">
+                    <button onclick="showAdminTab('codes')" style="flex:1; padding:10px; border-radius:8px; border:none; background:#333; color:white;">Kodlar</button>
+                    <button onclick="showAdminTab('pays')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--secondary); color:white;">Ödənişlər</button>
+                    <button onclick="showAdminTab('ann')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--primary); color:black;">Banner</button>
                 </div>
                 
                 <div id="tab-codes">
-                    <div id="codes-list" style="max-height:200px; overflow-y:auto;"></div>
-                    <button onclick="addNewCodeUI()" style="width:100%; background:var(--success); border:none; padding:10px; margin-top:10px; font-weight:bold; border-radius:8px;">+ YENİ KOD</button>
+                    <div id="codes-list" style="max-height:200px; overflow-y:auto; margin-bottom:10px;"></div>
+                    <button onclick="addNewCodeUI()" style="width:100%; background:var(--success); border:none; padding:12px; font-weight:bold; border-radius:10px; color:black;">+ YENİ KOD ƏLAVƏ ET</button>
                 </div>
 
-                <div id="tab-payments" style="display:none;">
+                <div id="tab-pays" style="display:none;">
                     <div id="payments-list" style="max-height:300px; overflow-y:auto;"></div>
+                </div>
+
+                <div id="tab-ann" style="display:none;">
+                    <input type="text" id="admin-ann-input" placeholder="Banner mətni...">
+                    <button onclick="updateAnn()" class="main-btn" style="background:var(--primary); color:black;">YAYINLA</button>
                 </div>
             </div>
         </div>
 
         <div id="step2" class="step">
-            <h2>PAKET SEÇİN</h2>
+            <h2>PAKET SEÇİMİ</h2>
             <select id="packet-select"><option value="660 UC">660 UC</option><option value="1920 UC">1920 UC</option><option value="8100 UC">8100 UC</option></select>
             <input type="number" id="player-id" placeholder="PUBG Mobile ID">
-            <button class="main-btn" onclick="processOrder()">TƏSDİQLƏ</button>
+            <button class="main-btn" onclick="processOrder()">TAMAMLA</button>
         </div>
 
         <div id="step3" class="step">
@@ -153,97 +180,24 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 🟢 BİLDİRİŞ İZNİ
         if(Notification.permission !== "granted") Notification.requestPermission();
 
-        // 🟢 IP VƏ SAAT MƏHDUDİYYƏTİ
-        async function checkSpam() {
-            const lastTime = localStorage.getItem('last_pay_sent');
-            if(lastTime && (new Date().getTime() - lastTime < 3600000)) {
-                const remains = Math.ceil((3600000 - (new Date().getTime() - lastTime)) / 60000);
-                alert(`Gözləyin! Növbəti göndəriş üçün ${remains} dəqiqə qalib.`);
-                return false;
+        // 🟢 BANNER REALTIME
+        onSnapshot(doc(db, "settings", "announcement"), s => {
+            if(s.exists()){
+                document.getElementById('announcement-bar').style.display = 'block';
+                document.getElementById('ann-text').innerText = s.data().text;
             }
-            return true;
-        }
-
-        // 🟢 ÖDƏNİŞ GÖNDƏRMƏ
-        window.submitPayment = async function() {
-            const fileInput = document.getElementById('pay-file');
-            const contact = document.getElementById('pay-contact').value;
-            
-            if(!fileInput.files[0] || contact.length < 5) return alert("Qəbz və əlaqə məlumatı məcburidir!");
-            if(!await checkSpam()) return;
-
-            startLoading(async () => {
-                const reader = new FileReader();
-                reader.readAsDataURL(fileInput.files[0]);
-                reader.onload = async () => {
-                    const payID = "PAY-" + Math.floor(Math.random()*99999);
-                    await setDoc(doc(db, "payments", payID), {
-                        contact: contact,
-                        img: reader.result,
-                        date: new Date().toLocaleString(),
-                        timestamp: new Date().getTime(),
-                        ip: "İstifadəçi IP" // Real IP üçün backend lazımdır, client tərəfdə təmsili yazılır
-                    });
-                    localStorage.setItem('last_pay_sent', new Date().getTime());
-                    alert("Ödəniş təsdiqə göndərildi!");
-                    closeSection('sec-pay-confirm');
-                };
-            });
-        };
-
-        // 🟢 ADMIN PANEL TABLARI
-        window.showAdminTab = (tab) => {
-            document.getElementById('tab-codes').style.display = tab === 'codes' ? 'block' : 'none';
-            document.getElementById('tab-payments').style.display = tab === 'payments' ? 'block' : 'none';
-            if(tab === 'payments') loadPayments();
-        };
-
-        // 🟢 ÖDƏNİŞLƏRİ YÜKLƏ (ADMİN)
-        async function loadPayments() {
-            const q = query(collection(db, "payments"), orderBy("timestamp", "desc"));
-            const snap = await getDocs(q);
-            const list = document.getElementById('payments-list'); list.innerHTML = "";
-            snap.forEach(d => {
-                const data = d.data();
-                list.innerHTML += `
-                    <div class="payment-card">
-                        <small style="color:var(--primary)">${data.date}</small><br>
-                        <b>Məlumat:</b> ${data.contact.substring(0,20)}...
-                        <button onclick="showPayDetail('${d.id}')" style="background:var(--primary); border:none; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer; float:right;">Daha ətraflı..</button>
-                        <div id="det-${d.id}" style="display:none; margin-top:10px; border-top:1px solid #333; padding-top:10px;">
-                            <p><b>IP:</b> ${data.ip}</p>
-                            <p><b>Tam Məlumat:</b> ${data.contact}</p>
-                            <img src="${data.img}" class="neon-img">
-                        </div>
-                    </div>`;
-            });
-        }
-        window.showPayDetail = (id) => {
-            const el = document.getElementById('det-'+id);
-            el.style.display = el.style.display === 'none' ? 'block' : 'none';
-        };
-
-        // 🟢 BİLDİRİŞ SİSTEMİ (ANLIQ)
-        onSnapshot(collection(db, "receipts"), (snap) => {
-            snap.docChanges().forEach(change => {
-                if(change.type === "added" && Notification.permission === "granted") {
-                    new Notification("Neft Game: Yeni Sifariş!", { body: "Kod istifadə olundu!" });
-                }
-            });
         });
 
-        onSnapshot(collection(db, "payments"), (snap) => {
-            snap.docChanges().forEach(change => {
-                if(change.type === "added" && Notification.permission === "granted") {
-                    new Notification("Neft Game: Ödəniş Təsdiqi Gəldi!", { body: "Yeni qəbz yükləndi." });
-                }
-            });
-        });
+        window.updateAnn = async function() {
+            const t = document.getElementById('admin-ann-input').value;
+            if(!t) return;
+            await setDoc(doc(db, "settings", "announcement"), { text: t });
+            alert("Banner yeniləndi!");
+        };
 
-        // 🟢 STANDART FUNKSİYALAR (GİRİŞ, BOT, SİFARİŞ)
+        // 🟢 LOADING & AUTH
         let activeCode = "";
         window.startLoading = (cb) => {
             const ov = document.getElementById('loading-overlay');
@@ -252,33 +206,27 @@
         };
 
         window.verifyCode = async function() {
-            const code = document.getElementById('access-code').value.trim().toUpperCase();
-            if(code === "ADMIN2026") { document.getElementById('admin-panel').style.display = 'block'; loadCodes(); return; }
-            const snap = await getDoc(doc(db, "codes", code));
-            if(snap.exists() && !snap.data().used) { activeCode = code; startLoading(() => showStep('step2')); }
-            else alert("Kod yanlışdır!");
+            const val = document.getElementById('access-code').value.trim().toUpperCase();
+            if(val === "ADMIN2026") { 
+                document.getElementById('admin-panel').style.display = 'block'; 
+                loadCodes(); loadPayments(); return; 
+            }
+            const snap = await getDoc(doc(db, "codes", val));
+            if(snap.exists() && !snap.data().used) {
+                activeCode = val;
+                startLoading(() => showStep('step2'));
+            } else alert("Kod yanlışdır!");
         };
 
-        window.processOrder = async function() {
-            const pid = document.getElementById('player-id').value;
-            const pack = document.getElementById('packet-select').value;
-            if(pid.length < 5) return alert("ID daxil edin!");
-            startLoading(async () => {
-                const rid = "NFT-" + Math.floor(Math.random()*999999);
-                const d = { used: true, usedBy: pid, packet: pack, usedAt: new Date().getTime(), receiptID: rid };
-                await updateDoc(doc(db, "codes", activeCode), d);
-                await setDoc(doc(db, "receipts", rid), d);
-                generateReceipt(pid, pack, rid); showStep('step3');
-            });
-        };
-
-        window.sendMessage = () => {
-            const inp = document.getElementById('chat-input');
-            const b = document.getElementById('chat-body');
-            if(!inp.value) return;
-            b.innerHTML += `<div style="align-self:flex-end; background:var(--chat-user); padding:10px; border-radius:12px; margin-top:5px;">${inp.value}</div>`;
-            setTimeout(() => { b.innerHTML += `<div style="background:var(--chat-bot); padding:10px; border-radius:12px; margin-top:5px;">Başa düşmədim, operatora yazın.</div>`; b.scrollTop = b.scrollHeight; }, 600);
-            inp.value = "";
+        // 🟢 KOD ƏLAVƏ ETMƏ (FIXED)
+        window.addNewCodeUI = async function() {
+            const v = prompt("Əlavə ediləcək yeni kodu yazın:");
+            if(v) {
+                const codeName = v.toUpperCase().trim();
+                await setDoc(doc(db, "codes", codeName), { used: false });
+                alert("Kod uğurla əlavə edildi!");
+                loadCodes();
+            }
         };
 
         window.loadCodes = async function() {
@@ -286,23 +234,95 @@
             const list = document.getElementById('codes-list'); list.innerHTML = "";
             snap.forEach(d => {
                 const data = d.data();
-                list.innerHTML += `<div class="payment-card"><b>${d.id}</b> ${data.used ? '❌' : '✅'}</div>`;
+                list.innerHTML += `<div class="payment-card" style="display:flex; justify-content:space-between; font-size:12px;">
+                    <span>${d.id} ${data.used ? '❌' : '✅'}</span>
+                    <span onclick="deleteCode('${d.id}')" style="color:red; cursor:pointer;">SİL</span>
+                </div>`;
             });
         };
 
+        window.deleteCode = async function(id) {
+            if(confirm("Silinsin?")) { await deleteDoc(doc(db, "codes", id)); loadCodes(); }
+        };
+
+        // 🟢 ÖDƏNİŞ TƏSDİQİ & 1 SAAT LİMİT
+        window.submitPayment = async function() {
+            const file = document.getElementById('pay-file').files[0];
+            const contact = document.getElementById('pay-contact').value;
+            const last = localStorage.getItem('last_pay');
+            
+            if(!file || contact.length < 5) return alert("Məlumatları doldurun!");
+            if(last && (new Date().getTime() - last < 3600000)) return alert("Hər saatda yalnız 1 dəfə göndərmək olar.");
+
+            startLoading(async () => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = async () => {
+                    const id = "PAY-" + Math.floor(Math.random()*99999);
+                    await setDoc(doc(db, "payments", id), {
+                        contact, img: reader.result, date: new Date().toLocaleString(),
+                        timestamp: new Date().getTime(), ip: "User-IP"
+                    });
+                    localStorage.setItem('last_pay', new Date().getTime());
+                    alert("Göndərildi!"); closeSection('sec-pay-confirm');
+                };
+            });
+        };
+
+        window.loadPayments = async function() {
+            const q = query(collection(db, "payments"), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q);
+            const list = document.getElementById('payments-list'); list.innerHTML = "";
+            snap.forEach(d => {
+                const data = d.data();
+                list.innerHTML += `
+                    <div class="payment-card">
+                        <small>${data.date}</small><br>
+                        <b>Əlaqə:</b> ${data.contact.substring(0,15)}...
+                        <button onclick="togglePay('${d.id}')" style="float:right; background:var(--primary); border:none; border-radius:4px; padding:3px 7px; font-size:10px;">Daha ətraflı</button>
+                        <div id="p-${d.id}" style="display:none; margin-top:10px; border-top:1px solid #333; padding-top:10px;">
+                            <p><b>Tam:</b> ${data.contact}</p>
+                            <img src="${data.img}" class="neon-box">
+                        </div>
+                    </div>`;
+            });
+        };
+
+        window.togglePay = (id) => { const x = document.getElementById('p-'+id); x.style.display = x.style.display==='none'?'block':'none'; };
+
+        // 🟢 ADMIN TABS
+        window.showAdminTab = (t) => {
+            document.getElementById('tab-codes').style.display = t==='codes'?'block':'none';
+            document.getElementById('tab-pays').style.display = t==='pays'?'block':'none';
+            document.getElementById('tab-ann').style.display = t==='ann'?'block':'none';
+        };
+
+        // 🟢 UI HELPERS
         window.toggleMenu = () => { document.getElementById('side-menu').classList.toggle('active'); document.getElementById('m-icon').classList.toggle('open'); };
         window.openSection = (id) => { toggleMenu(); document.getElementById(id).style.display = 'flex'; };
-        window.closeSection = (id) => { document.getElementById(id).style.display = 'none'; };
+        window.closeSection = (id) => document.getElementById(id).style.display = 'none';
         function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
+
+        window.processOrder = async function() {
+            const pid = document.getElementById('player-id').value;
+            if(pid.length < 5) return alert("ID daxil edin!");
+            startLoading(async () => {
+                const rid = "NFT-" + Math.floor(Math.random()*99999);
+                const d = { used: true, usedBy: pid, packet: document.getElementById('packet-select').value, usedAt: new Date().getTime(), receiptID: rid };
+                await updateDoc(doc(db, "codes", activeCode), d);
+                await setDoc(doc(db, "receipts", rid), d);
+                generateReceipt(pid, d.packet, rid); showStep('step3');
+            });
+        };
+
         function generateReceipt(id, p, rid) {
             const c = document.getElementById('receiptCanvas'); const ctx = c.getContext('2d');
             ctx.fillStyle = "#0f0f12"; ctx.fillRect(0,0,400,550);
             ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,550);
             ctx.fillStyle = "#00f2ff"; ctx.font = "bold 24px Arial"; ctx.fillText("NEFT GAME SHOP", 85, 60);
             ctx.fillStyle = "#fff"; ctx.font = "16px Arial"; ctx.fillText("ID: " + id, 50, 150); ctx.fillText("PAKET: " + p, 50, 200); ctx.fillText("QƏBZ: " + rid, 50, 250);
-            ctx.fillStyle = "#00ff88"; ctx.fillText("TƏSDİQLƏNDİ", 140, 480);
+            ctx.fillStyle = "#00ff88"; ctx.fillText("SİFARİŞ QƏBUL EDİLDİ", 100, 480);
         }
     </script>
 </body>
-            </html>
-            
+</html>
