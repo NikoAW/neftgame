@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neft Game - Pro v7.1</title>
+    <title>Neft Game - Pro v7.2</title>
     <style>
         :root {
             --primary: #00f2ff; --secondary: #7000ff; --bg: #0a0a0c;
@@ -13,18 +13,15 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
         
-        /* LOADING */
         #loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { width: 60px; height: 60px; border: 5px solid #111; border-top: 5px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         #loading-text { margin-top: 20px; font-weight: bold; color: var(--primary); letter-spacing: 2px; font-size: 0.8rem; }
 
-        /* BANNER */
         #announcement-bar { position: fixed; top: 0; width: 100%; background: linear-gradient(90deg, #7000ff, #00f2ff); color: #000; font-weight: bold; padding: 10px 0; font-size: 13px; z-index: 900; display: none; overflow: hidden; box-shadow: 0 5px 15px rgba(0,242,255,0.2); }
         .marquee { display: inline-block; white-space: nowrap; animation: marquee 20s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
 
-        /* MENU */
         .menu-trigger { position: fixed; top: 50px; right: 20px; z-index: 1100; cursor: pointer; transition: 0.5s; }
         .menu-trigger.open { transform: rotate(180deg); }
         .menu-trigger img { width: 45px; height: 45px; filter: drop-shadow(0 0 5px var(--primary)); }
@@ -32,30 +29,25 @@
         #side-menu { position: fixed; top: 0; right: -80%; width: 80%; height: 100%; background: rgba(10, 10, 12, 0.98); border-left: 2px solid var(--primary); z-index: 1050; transition: 0.5s; padding-top: 100px; }
         #side-menu.active { right: 0; }
         .menu-item { padding: 20px 25px; border-bottom: 1px solid #222; font-weight: bold; display: flex; align-items: center; gap: 15px; cursor: pointer; color: white; transition: 0.3s; }
-        .menu-item:active { background: rgba(0,242,255,0.1); }
 
-        /* MAIN UI */
         .container { width: 92%; max-width: 420px; background: var(--card-bg); padding: 30px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.05); text-align: center; position: relative; }
         h2 { color: var(--primary); letter-spacing: 2px; margin-bottom: 20px; font-size: 1.5rem; }
-        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #1a1a1e; border: 1px solid #333; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
-        input:focus { border-color: var(--primary); }
+        input, select, textarea { width: 100%; padding: 15px; margin: 10px 0; background: #1a1a1e; border: 1px solid #333; border-radius: 12px; color: white; outline: none; }
         .main-btn { width: 100%; padding: 18px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; font-size: 1rem; }
 
-        /* FULL SECTIONS */
         .full-screen-section { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; flex-direction: column; overflow-y: auto; }
         .section-header { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; background: var(--card-bg); position: sticky; top: 0; z-index: 10; }
         
-        /* FAQ BOXES */
         .faq-card { background: #1a1a1e; padding: 20px; border-radius: 15px; margin: 10px 20px; border-left: 4px solid var(--primary); text-align: left; }
         .faq-card b { color: var(--primary); display: block; margin-bottom: 8px; font-size: 1.1rem; }
-        .faq-card p { color: #ccc; font-size: 0.9rem; line-height: 1.6; }
 
-        /* ADMIN */
         #admin-panel { display: none; margin-top: 25px; padding: 20px; background: #000; border: 2px solid var(--orange); border-radius: 20px; }
-        .payment-card { background: #111; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; }
+        .payment-card { background: #111; padding: 15px; border-radius: 12px; margin-bottom: 10px; border: 1px solid #222; text-align: left; }
         .neon-box { border: 2px solid var(--primary); box-shadow: 0 0 15px var(--primary); border-radius: 15px; max-width: 100%; margin-top: 15px; }
 
         .step { display: none; } .step.active { display: block; }
+
+        .approve-btn { background: var(--success); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -92,27 +84,8 @@
             <button onclick="closeSection('sec-faq')" style="background:none; border:none; color:white; font-size:2.5rem;">&times;</button>
         </div>
         <div style="padding-bottom: 30px;">
-            <div class="faq-card">
-                <b>UC nə vaxt hesaba gəlir?</b>
-                <p>Ödəniş təsdiqləndikdən sonra 5-20 dəqiqə ərzində UC birbaşa ID-nizə göndərilir.</p>
-            </div>
-            <div class="faq-card">
-                <b>Kod yerinə nə yazım?</b>
-                <p>Kod almaq üçün ödəniş etməli və,
-                    Ödənişi tesdiq etmək üçün göndermelisiniz. 5-10 dəqiqə ərzində sizə xüsusi kodunuz avtomatik göndərilir.</p>
-            </div>
-            </div class="faq-card">
-                <b>Ban riski varmı?</b>
-                <p>Xeyr, bütün yükləmələr rəsmi "Midasbuy" və ya rəsmi tərəfdaşlar vasitəsilə edilir. Hesabınız 100% təhlükəsizdir.</p>
-            </div>
-            <div class="faq-card">
-                <b>Səhv ID daxil etsəm nə olar?</b>
-                <p>Sistem avtomatik işlədiyi üçün sifariş tamamlandıqdan sonra geri qaytarılma mümkün deyil. Lütfən ID-nizi iki dəfə yoxlayın.</p>
-            </div>
-            <div class="faq-card">
-                <b>Ödəniş qəbzini niyə yükləməliyəm?</b>
-                <p>Bu, ödənişin həqiqətən sizin tərəfinizdən edildiyini təsdiqləmək üçün vacibdir. Qəbz olmadan sifariş icra olunmur.</p>
-            </div>
+            <div class="faq-card"><b>UC nə vaxt hesaba gəlir?</b><p>Ödəniş təsdiqləndikdən sonra 5-20 dəqiqə ərzində yüklənir.</p></div>
+            <div class="faq-card"><b>Ban riski varmı?</b><p>Xeyr, rəsmi metodla yüklənir, 100% təhlükəsizdir.</p></div>
         </div>
     </div>
 
@@ -125,11 +98,8 @@
             <label style="font-size:0.8rem; color:var(--primary);">QƏBZİN ŞƏKLİ (MƏCBURİ):</label>
             <input type="file" id="pay-file" accept="image/*">
             <label style="font-size:0.8rem; color:var(--primary); margin-top:10px; display:block;">ƏLAQƏ (WA & TİKTOK):</label>
-            <textarea id="pay-contact" placeholder="Məsələn: +994 50 123 45 67 / @neftuser" rows="3"></textarea>
+            <textarea id="pay-contact" placeholder="+994 50 000 00 00 / @tiktok_adi" rows="3"></textarea>
             <button class="main-btn" onclick="submitPayment()">GÖNDƏR</button>
-            <p style="margin-top:15px; font-size:0.8rem; color:var(--success); background:rgba(0,255,136,0.1); padding:10px; border-radius:10px;">
-                * 5-10 dəqiqə ərzində avtomatik yoxlanış tamamlanacaq. 1 saatdan bir göndərmə limiti mövcuddur.
-            </p>
         </div>
     </div>
 
@@ -142,23 +112,23 @@
             <div id="admin-panel">
                 <h4 style="color:var(--orange);">🛠️ ADMİN İDARƏETMƏ</h4>
                 <div style="display:flex; gap:5px; margin:15px 0;">
-                    <button onclick="showAdminTab('codes')" style="flex:1; padding:10px; border-radius:8px; border:none; background:#333; color:white;">Kodlar</button>
-                    <button onclick="showAdminTab('pays')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--secondary); color:white;">Ödənişlər</button>
-                    <button onclick="showAdminTab('ann')" style="flex:1; padding:10px; border-radius:8px; border:none; background:var(--primary); color:black;">Banner</button>
+                    <button onclick="showAdminTab('codes')" style="flex:1; padding:8px; border-radius:5px; border:none; background:#333; color:white;">Kodlar</button>
+                    <button onclick="showAdminTab('pays')" style="flex:1; padding:8px; border-radius:5px; border:none; background:var(--secondary); color:white;">Ödənişlər</button>
+                    <button onclick="showAdminTab('ann')" style="flex:1; padding:8px; border-radius:5px; border:none; background:var(--primary); color:black;">Banner</button>
                 </div>
                 
                 <div id="tab-codes">
                     <div id="codes-list" style="max-height:200px; overflow-y:auto; margin-bottom:10px;"></div>
-                    <button onclick="addNewCodeUI()" style="width:100%; background:var(--success); border:none; padding:12px; font-weight:bold; border-radius:10px; color:black;">+ YENİ KOD ƏLAVƏ ET</button>
+                    <button onclick="addNewCodeUI()" style="width:100%; background:var(--success); border:none; padding:10px; font-weight:bold; border-radius:10px;">+ YENİ KOD</button>
                 </div>
 
                 <div id="tab-pays" style="display:none;">
-                    <div id="payments-list" style="max-height:300px; overflow-y:auto;"></div>
+                    <div id="payments-list" style="max-height:350px; overflow-y:auto;"></div>
                 </div>
 
                 <div id="tab-ann" style="display:none;">
                     <input type="text" id="admin-ann-input" placeholder="Banner mətni...">
-                    <button onclick="updateAnn()" class="main-btn" style="background:var(--primary); color:black;">YAYINLA</button>
+                    <button onclick="updateAnn()" class="main-btn">YAYINLA</button>
                 </div>
             </div>
         </div>
@@ -185,9 +155,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        if(Notification.permission !== "granted") Notification.requestPermission();
-
-        // 🟢 BANNER REALTIME
+        // 🟢 REALTIME BANNER
         onSnapshot(doc(db, "settings", "announcement"), s => {
             if(s.exists()){
                 document.getElementById('announcement-bar').style.display = 'block';
@@ -197,12 +165,11 @@
 
         window.updateAnn = async function() {
             const t = document.getElementById('admin-ann-input').value;
-            if(!t) return;
             await setDoc(doc(db, "settings", "announcement"), { text: t });
             alert("Banner yeniləndi!");
         };
 
-        // 🟢 LOADING & AUTH
+        // 🟢 AUTH & STEPS
         let activeCode = "";
         window.startLoading = (cb) => {
             const ov = document.getElementById('loading-overlay');
@@ -217,47 +184,79 @@
                 loadCodes(); loadPayments(); return; 
             }
             const snap = await getDoc(doc(db, "codes", val));
-            if(snap.exists() && !snap.data().used) {
-                activeCode = val;
-                startLoading(() => showStep('step2'));
-            } else alert("Kod yanlışdır!");
+            if(snap.exists() && !snap.data().used) { activeCode = val; startLoading(() => showStep('step2')); }
+            else alert("Kod yanlışdır!");
         };
 
-        // 🟢 KOD ƏLAVƏ ETMƏ (FIXED)
+        // 🟢 ADMIN: PAYMENTS (NEW AUTO-SENDER)
+        window.loadPayments = async function() {
+            const q = query(collection(db, "payments"), orderBy("timestamp", "desc"));
+            const snap = await getDocs(q);
+            const list = document.getElementById('payments-list'); list.innerHTML = "";
+            snap.forEach(d => {
+                const data = d.data();
+                list.innerHTML += `
+                    <div class="payment-card" id="card-${d.id}">
+                        <small style="color:var(--primary)">${data.date}</small><br>
+                        <b>Əlaqə:</b> ${data.contact.substring(0,25)}...
+                        <button class="approve-btn" onclick="approveAndSend('${d.id}', '${data.contact}')">✅ TƏSDİQLƏ & KOD GÖNDƏR</button>
+                        <button onclick="togglePay('${d.id}')" style="background:none; border:none; color:#888; font-size:10px; margin-top:5px; cursor:pointer;">Daha ətraflı..</button>
+                        <div id="p-${d.id}" style="display:none; margin-top:10px; border-top:1px solid #333; padding-top:10px;">
+                            <p style="font-size:12px;"><b>Tam Məlumat:</b> ${data.contact}</p>
+                            <img src="${data.img}" class="neon-box">
+                            <button onclick="deletePayment('${d.id}')" style="color:red; background:none; border:none; font-size:11px; margin-top:10px;">Sorğunu sil</button>
+                        </div>
+                    </div>`;
+            });
+        };
+
+        window.approveAndSend = async function(payId, contact) {
+            const newGen = "NFT-" + Math.floor(1000 + Math.random()*9000);
+            try {
+                // Firebase-ə yeni kodu aktiv olaraq yaz
+                await setDoc(doc(db, "codes", newGen), { used: false });
+                
+                const phone = contact.match(/\d+/g) ? contact.match(/\d+/g).join('') : "";
+                const msg = encodeURIComponent(`Neft Game 💎\n\nÖdənişiniz təsdiqləndi!\nGiriş Kodunuz: ${newGen}\n\nUğurlu oyunlar!`);
+
+                if(phone.length >= 9) {
+                    window.open(`https://wa.me/${phone.startsWith('994')?'':'994'}${phone}?text=${msg}`, '_blank');
+                } else {
+                    navigator.clipboard.writeText(newGen);
+                    alert(`Kod (${newGen}) kopyalandı! Müştəri nömrə yazmadığı üçün Tiktok-dan göndərin.`);
+                }
+                document.getElementById('card-'+payId).style.border = "2px solid var(--success)";
+            } catch(e) { alert("Xəta: " + e.message); }
+        };
+
+        window.deletePayment = async function(id) {
+            if(confirm("Silinsin?")) { await deleteDoc(doc(db, "payments", id)); loadPayments(); }
+        };
+
+        // 🟢 ADMIN: CODES
         window.addNewCodeUI = async function() {
-            const v = prompt("Əlavə ediləcək yeni kodu yazın:");
-            if(v) {
-                const codeName = v.toUpperCase().trim();
-                await setDoc(doc(db, "codes", codeName), { used: false });
-                alert("Kod uğurla əlavə edildi!");
-                loadCodes();
-            }
+            const v = prompt("Yeni kod:");
+            if(v) { await setDoc(doc(db, "codes", v.toUpperCase()), { used: false }); loadCodes(); }
         };
-
         window.loadCodes = async function() {
             const snap = await getDocs(collection(db, "codes"));
             const list = document.getElementById('codes-list'); list.innerHTML = "";
             snap.forEach(d => {
-                const data = d.data();
-                list.innerHTML += `<div class="payment-card" style="display:flex; justify-content:space-between; font-size:12px;">
-                    <span>${d.id} ${data.used ? '❌' : '✅'}</span>
+                list.innerHTML += `<div class="payment-card" style="display:flex; justify-content:space-between; padding:10px;">
+                    <span>${d.id} ${d.data().used ? '❌' : '✅'}</span>
                     <span onclick="deleteCode('${d.id}')" style="color:red; cursor:pointer;">SİL</span>
                 </div>`;
             });
         };
+        window.deleteCode = async function(id) { await deleteDoc(doc(db, "codes", id)); loadCodes(); };
 
-        window.deleteCode = async function(id) {
-            if(confirm("Silinsin?")) { await deleteDoc(doc(db, "codes", id)); loadCodes(); }
-        };
-
-        // 🟢 ÖDƏNİŞ TƏSDİQİ & 1 SAAT LİMİT
+        // 🟢 USER: SUBMIT PAYMENT
         window.submitPayment = async function() {
             const file = document.getElementById('pay-file').files[0];
             const contact = document.getElementById('pay-contact').value;
-            const last = localStorage.getItem('last_pay');
-            
-            if(!file || contact.length < 5) return alert("Məlumatları doldurun!");
-            if(last && (new Date().getTime() - last < 3600000)) return alert("Hər saatda yalnız 1 dəfə göndərmək olar.");
+            const last = localStorage.getItem('last_p');
+            if(!file || contact.length < 5) return alert("Məlumatları tam doldurun!");
+            if(last && (new Date().getTime() - last < 3600000)) return alert("1 saat gözləyin.");
 
             startLoading(async () => {
                 const reader = new FileReader();
@@ -266,46 +265,24 @@
                     const id = "PAY-" + Math.floor(Math.random()*99999);
                     await setDoc(doc(db, "payments", id), {
                         contact, img: reader.result, date: new Date().toLocaleString(),
-                        timestamp: new Date().getTime(), ip: "User-IP"
+                        timestamp: new Date().getTime()
                     });
-                    localStorage.setItem('last_pay', new Date().getTime());
-                    alert("Göndərildi!"); closeSection('sec-pay-confirm');
+                    localStorage.setItem('last_p', new Date().getTime());
+                    alert("Göndərildi! Təşəkkürlər."); closeSection('sec-pay-confirm');
                 };
             });
-        };
-
-        window.loadPayments = async function() {
-            const q = query(collection(db, "payments"), orderBy("timestamp", "desc"));
-            const snap = await getDocs(q);
-            const list = document.getElementById('payments-list'); list.innerHTML = "";
-            snap.forEach(d => {
-                const data = d.data();
-                list.innerHTML += `
-                    <div class="payment-card">
-                        <small>${data.date}</small><br>
-                        <b>Əlaqə:</b> ${data.contact.substring(0,15)}...
-                        <button onclick="togglePay('${d.id}')" style="float:right; background:var(--primary); border:none; border-radius:4px; padding:3px 7px; font-size:10px;">Daha ətraflı</button>
-                        <div id="p-${d.id}" style="display:none; margin-top:10px; border-top:1px solid #333; padding-top:10px;">
-                            <p><b>Tam:</b> ${data.contact}</p>
-                            <img src="${data.img}" class="neon-box">
-                        </div>
-                    </div>`;
-            });
-        };
-
-        window.togglePay = (id) => { const x = document.getElementById('p-'+id); x.style.display = x.style.display==='none'?'block':'none'; };
-
-        // 🟢 ADMIN TABS
-        window.showAdminTab = (t) => {
-            document.getElementById('tab-codes').style.display = t==='codes'?'block':'none';
-            document.getElementById('tab-pays').style.display = t==='pays'?'block':'none';
-            document.getElementById('tab-ann').style.display = t==='ann'?'block':'none';
         };
 
         // 🟢 UI HELPERS
         window.toggleMenu = () => { document.getElementById('side-menu').classList.toggle('active'); document.getElementById('m-icon').classList.toggle('open'); };
         window.openSection = (id) => { toggleMenu(); document.getElementById(id).style.display = 'flex'; };
         window.closeSection = (id) => document.getElementById(id).style.display = 'none';
+        window.togglePay = (id) => { const x = document.getElementById('p-'+id); x.style.display = x.style.display==='none'?'block':'none'; };
+        window.showAdminTab = (t) => {
+            document.getElementById('tab-codes').style.display = t==='codes'?'block':'none';
+            document.getElementById('tab-pays').style.display = t==='pays'?'block':'none';
+            document.getElementById('tab-ann').style.display = t==='ann'?'block':'none';
+        };
         function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
 
         window.processOrder = async function() {
