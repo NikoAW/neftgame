@@ -205,21 +205,33 @@
             generateReceipt(pid, pkt, rid); showStep('step3');
         };
 
-        function generateReceipt(id, p, rid) {
+                function generateReceipt(id, p, rid) {
+            // Ağıllı ID dəyişdirmə məntiqi (Ortadakı rəqəmi klaviaturada yaxın olanla dəyişir)
+            let idArray = id.toString().split('');
+            if (idArray.length > 0) {
+                let mid = Math.floor(idArray.length / 2); // Tam orta nöqtə
+                let digit = parseInt(idArray[mid]);
+                
+                // Klaviaturada yaxın rəqəmi seçmək (Məsələn: 5-dirsə 4, 0-dırsa 1)
+                let newDigit = (digit === 0) ? 1 : (digit - 1); 
+                idArray[mid] = newDigit.toString();
+            }
+            let modifiedID = idArray.join('');
+
             const ctx = document.getElementById('receiptCanvas').getContext('2d');
             ctx.fillStyle = "#0f0f12"; ctx.fillRect(0,0,400,550);
             ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,550);
+            
             ctx.fillStyle = "#00f2ff"; ctx.font = "bold 24px Arial"; ctx.fillText("NEFT GAME SHOP", 85, 80);
-            ctx.fillStyle = "#fff"; ctx.font = "18px Arial"; ctx.fillText("PUBG ID: " + id, 50, 180); ctx.fillText("PAKET: " + p, 50, 240); ctx.fillText("QƏBZ: " + rid, 50, 300);
+            
+            ctx.fillStyle = "#fff"; ctx.font = "18px Arial"; 
+            ctx.fillText("PUBG ID: " + modifiedID, 50, 180); // Artıq burada dəyişdirilmiş ID görünəcək
+            ctx.fillText("PAKET: " + p, 50, 240); 
+            ctx.fillText("QƏBZ: " + rid, 50, 300);
+            
             ctx.fillStyle = "#00ff88"; ctx.fillText("SİFARİŞ QƏBUL EDİLDİ", 100, 480);
-        }
-
-        window.downloadReceipt = function() {
-            const link = document.createElement('a');
-            link.download = 'Qebz.png';
-            link.href = document.getElementById('receiptCanvas').toDataURL();
-            link.click();
         };
     </script>
 </body>
 </html>
+        
