@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Neft Game - Professional v6.2</title>
+    <title>Neft Game - Master v6.5</title>
     <style>
         :root {
             --primary: #00f2ff; --secondary: #7000ff; --bg: #0a0a0c;
@@ -13,266 +13,214 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
         
-        /* ADMİN DUYURU LENTİ */
-        #announcement-bar { position: fixed; top: 0; width: 100%; background: linear-gradient(90deg, #7000ff, #00f2ff); color: #000; font-weight: bold; padding: 6px 0; font-size: 13px; z-index: 1000; display: none; overflow: hidden; box-shadow: 0 2px 10px rgba(0,242,255,0.3); }
-        .marquee { display: inline-block; white-space: nowrap; animation: marquee 18s linear infinite; padding-left: 100%; }
-        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
-
-        /* CANLI BİLDİRİŞ */
-        #live-notif { position: fixed; bottom: 25px; left: -350px; background: rgba(22, 22, 26, 0.98); border: 1px solid var(--primary); padding: 15px; border-radius: 15px; display: flex; align-items: center; gap: 12px; transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1001; box-shadow: 0 10px 30px rgba(0,0,0,0.8); min-width: 250px; }
+        /* FAKE NOTIF */
+        #live-notif { position: fixed; bottom: 25px; left: -350px; background: rgba(22, 22, 26, 0.98); border: 1px solid var(--primary); padding: 15px; border-radius: 15px; display: flex; align-items: center; gap: 12px; transition: 0.6s; z-index: 1001; box-shadow: 0 10px 30px rgba(0,0,0,0.8); min-width: 250px; }
         #live-notif.show { left: 20px; }
 
-        .container { width: 95%; max-width: 450px; background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; margin-top: 50px; position: relative; z-index: 10; }
+        .container { width: 95%; max-width: 450px; background: var(--card-bg); padding: 25px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); text-align: center; position: relative; }
         h2 { color: var(--primary); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; font-size: 1.2rem; }
-        input, select { width: 100%; padding: 14px; margin: 10px 0; background: #222; border: 1px solid #333; border-radius: 12px; color: white; outline: none; transition: 0.3s; }
-        .main-btn { width: 100%; padding: 16px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; margin-top: 10px; transition: 0.3s; }
-        
-        /* ADMIN PANEL */
-        #admin-panel { display: none; margin-top: 20px; padding: 15px; background: #000; border-radius: 15px; border: 2px solid var(--primary); text-align: left; }
-        .code-card { background: #111; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 11px; border-left: 4px solid var(--primary); position: relative; display: flex; justify-content: space-between; align-items: center; }
+        input, select { width: 100%; padding: 14px; margin: 10px 0; background: #222; border: 1px solid #333; border-radius: 12px; color: white; outline: none; }
+        .main-btn { width: 100%; padding: 16px; border-radius: 12px; background: linear-gradient(45deg, var(--secondary), var(--primary)); color: white; font-weight: bold; cursor: pointer; border: none; text-transform: uppercase; margin-top: 10px; }
+        .main-btn:disabled { opacity: 0.5; cursor: not-allowed; filter: grayscale(1); }
 
-        /* CHAT UI GÜCLƏNDİRİLMİŞ */
+        /* POLICY BOX */
+        #policy-box { display: none; text-align: left; background: #000; border: 1px solid var(--primary); padding: 15px; border-radius: 15px; margin-top: 15px; box-shadow: 0 0 15px rgba(0,242,255,0.2); }
+        .policy-text { font-size: 11px; color: #ccc; height: 180px; overflow-y: auto; line-height: 1.6; margin-bottom: 10px; padding-right: 5px; }
+        .policy-text b { color: var(--primary); }
+
+        /* CHAT UI */
         #chat-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 2000; flex-direction: column; }
-        .chat-header { padding: 15px; background: var(--card-bg); display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
         .chat-body { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .chat-categories { display: flex; gap: 8px; overflow-x: auto; padding: 10px; border-bottom: 1px solid #222; background: #111; }
-        .cat-btn { background: #222; color: var(--primary); border: 1px solid var(--primary); padding: 6px 12px; border-radius: 15px; font-size: 11px; white-space: nowrap; cursor: pointer; }
-        .message { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 0.9rem; line-height: 1.4; }
-        .bot-msg { background: var(--chat-bot); align-self: flex-start; border-bottom-left-radius: 2px; }
-        .user-msg { background: var(--chat-user); align-self: flex-end; border-bottom-right-radius: 2px; }
+        .message { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 0.9rem; }
+        .bot-msg { background: var(--chat-bot); align-self: flex-start; }
+        .user-msg { background: var(--chat-user); align-self: flex-end; }
         
         .step { display: none; } .step.active { display: block; }
-        .progress-bar { height: 10px; background: #222; border-radius: 5px; overflow: hidden; margin: 25px 0; }
-        .progress-fill { height: 100%; width: 0%; background: var(--primary); transition: 0.4s; }
         #receiptCanvas { width: 100%; border-radius: 10px; margin-top: 15px; border: 1px solid #333; }
     </style>
 </head>
 <body>
 
-    <div id="announcement-bar"><div class="marquee" id="ann-text">NEFT GAME SHOP-A XOŞ GƏLMİŞSİNİZ! YENİ ENDİRİMLƏR ÜÇÜN BİZİ İZLƏYİN!</div></div>
-
     <div id="live-notif">
         <div style="background:var(--primary); width:35px; height:35px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:black; font-weight:bold;">✓</div>
         <div style="font-size: 12px;">
-            <b id="notif-user" style="color:var(--primary);">İstifadəçi: ---</b><br>
-            <span id="notif-pack" style="color:var(--success); font-weight: 500;">Sifariş yüklənir...</span>
+            <b id="notif-user" style="color:var(--primary);">Id:53****</b><br>
+            <span id="notif-pack" style="color:var(--success); font-weight: 500;">660 UC sipariş verdi!</span>
         </div>
     </div>
 
     <div class="container">
         <div id="step1" class="step active">
             <div onclick="openChat()" style="cursor:pointer; margin-bottom: 15px; display: inline-block;">
-                <img width="54" height="54" src="https://img.icons8.com/fluency/48/chatbot--v1.png" alt="bot"/>
-                <p style="color:var(--primary); font-size: 0.7rem; font-weight: bold; margin-top: 5px;">BOT DƏSTƏK</p>
+                <img width="54" src="https://img.icons8.com/fluency/48/chatbot--v1.png"/>
+                <p style="color:var(--primary); font-size: 0.7rem; font-weight: bold;">BOT DƏSTƏK</p>
             </div>
             <h2>SİSTEMƏ GİRİŞ</h2>
             <input type="text" id="access-code" placeholder="Aktivasiya Kodunu Daxil Edin">
-            <p id="error-msg" style="color:var(--error); font-size:0.8rem; min-height:20px; margin-top:5px;"></p>
             <button class="main-btn" onclick="verifyCode()">DAXİL OL</button>
+        </div>
 
-            <div id="admin-panel">
-                <div style="display:flex; justify-content:space-between; color:var(--primary); margin-bottom:15px; font-weight:bold;">
-                    <span>📊 ADMİN PANEL v6.2</span>
-                    <span onclick="location.reload()" style="cursor:pointer; color: #888;">[X]</span>
+        <div id="step-policy" class="step">
+            <div id="policy-box" style="display:block;">
+                <h3 style="color:var(--primary); font-size: 14px; margin-bottom: 10px;">🛡️ SİFARİŞ QAYDALARI</h3>
+                <div class="policy-text">
+                    1. Sifariş zamanı daxil edilən oyunçu ID-si tam və düzgün yazılmalıdır.<br><br>
+                    <b>2. Oyunçu ID-si yalnız əl ilə yazılmalıdır. Kopyala-yapışdır (copy-paste) edilməsi təhlükəsizlik sistemində xəta yarada bilər.</b><br><br>
+                    3. Yanlış, natamam və ya başqa hesaba aid ID daxil edildiyi halda məsuliyyət alıcıya aiddir.<br><br>
+                    4. Sifariş təsdiqləndikdən sonra sistem avtomatik işləyir və məlumatlar dəyişdirilə bilməz.<br><br>
+                    5. Göndərilən UC-lər geri qaytarılmır və başqa hesaba köçürülmür.<br><br>
+                    6. Bəzi hallarda UC balansı 10–30 dəqiqə gecikmə ilə görünə bilər.<br><br>
+                    7. Texniki araşdırma üçün alıcıdan profilin ekran görüntüsü tələb oluna bilər.<br><br>
+                    8. Ödəniş qəbzi saxlanılmalıdır. Qəbz olmadan araşdırma aparıla bilməz.<br><br>
+                    9. Uğurla icra olunmuş sifarişlərə görə geri ödəniş edilmir.<br><br>
+                    10. Sifarişi tamamlayan hər bir istifadəçi bu qaydalarla razılaşmış olur.
                 </div>
-                <div style="background:#111; padding:10px; border-radius:10px; margin-bottom:10px;">
-                    <small style="color:var(--primary);">📢 ELAN YAYIMLA</small>
-                    <input type="text" id="admin-ann-input" placeholder="Banner mətni..." style="padding:8px; font-size:11px;">
-                    <button onclick="updateAnn()" style="width:100%; background:var(--secondary); border:none; color:white; padding:8px; border-radius:6px; cursor:pointer;">YENİLƏ</button>
-                </div>
-                <div id="codes-list" style="max-height: 180px; overflow-y: auto;"></div>
-                <button onclick="addNewCodeUI()" style="width:100%; background:var(--success); border:none; padding:12px; border-radius:10px; font-weight:bold; margin-top:10px; color: #000;">+ YENİ KOD</button>
+                <button id="agree-btn" class="main-btn" disabled onclick="showStep('step-order')">Oxudum, Razılaşdım (3)</button>
             </div>
         </div>
 
-        <div id="step2" class="step">
+        <div id="step-order" class="step">
             <h2>PAKET SEÇİN</h2>
             <select id="packet-select">
                 <option value="660 UC (5 AZN)">660 UC • 5 AZN</option>
                 <option value="1920 UC (13 AZN)">1920 UC • 13 AZN</option>
                 <option value="8100 UC (35 AZN)">8100 UC • 35 AZN</option>
             </select>
-            <input type="number" id="player-id" placeholder="PUBG Mobile ID">
-            <button class="main-btn" onclick="processOrder()">TƏSDİQLƏ</button>
+            <input type="number" id="player-id" placeholder="PUBG Mobile ID (Əl ilə yazın)">
+            <button class="main-btn" onclick="processOrder()">TƏSDİQLƏ VƏ BİTİR</button>
         </div>
 
-        <div id="step3" class="step">
-            <h2 style="color:var(--success);">UĞURLUDUR!</h2>
+        <div id="step-receipt" class="step">
+            <h2 style="color:var(--success);">TƏSDİQLƏNDİ!</h2>
             <canvas id="receiptCanvas" width="400" height="550"></canvas>
             <button class="main-btn" onclick="downloadReceipt()">QƏBZİ YÜKLƏ</button>
-            <button class="main-btn" onclick="location.reload()" style="background:#333; margin-top:10px;">GERİ</button>
-        </div>
-
-        <div id="step-loader" class="step">
-            <h2 id="loader-title">İŞLƏNİLİR...</h2>
-            <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+            <button class="main-btn" onclick="location.reload()" style="background:#333; margin-top:10px;">ANA SƏHİFƏ</button>
         </div>
     </div>
 
     <div id="chat-overlay">
-        <div class="chat-header">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <img src="https://img.icons8.com/fluency/48/chatbot--v1.png" width="30">
-                <span style="font-weight:bold; color:var(--primary);">NEFT BOT v6.2</span>
-            </div>
-            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:2rem; cursor:pointer;">&times;</button>
+        <div class="chat-header" style="padding:15px; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-weight:bold; color:var(--primary);">NEFT BOT v6.5</span>
+            <button onclick="closeChat()" style="background:none; border:none; color:white; font-size:1.5rem;">&times;</button>
         </div>
-        
-        <div class="chat-categories" id="chat-cats">
-            <div class="cat-btn" onclick="botAsk('qiymet')">💰 Qiymətlər</div>
-            <div class="cat-btn" onclick="botAsk('vaxt')">⏳ Nə vaxt yüklənir?</div>
-            <div class="cat-btn" onclick="botAsk('etibar')">🛡️ Təhlükəsizlik</div>
-            <div class="cat-btn" onclick="botAsk('id_sehv')">❌ ID Səhv yazılsa?</div>
-            <div class="cat-btn" onclick="botAsk('operator')">👨‍💻 Operator</div>
-        </div>
-
         <div class="chat-body" id="chat-body">
-            <div class="message bot-msg">Salam! Mən Neft Game asistanıyam. Sizə necə kömək edə bilərəm? Aşağıdakı düymələrdən birini seçin və ya sualınızı yazın. 🤖</div>
+            <div class="message bot-msg">Salam! Sizə necə kömək edə bilərəm? Kart məlumatı və ya qiymətlər üçün sualınızı yazın. 🤖</div>
         </div>
-        
-        <div style="padding:20px; display:flex; gap:10px; background: #111;">
-            <input type="text" id="chat-input" placeholder="Sualınızı yazın..." style="margin:0; border-radius: 25px; padding-left: 20px;">
-            <button onclick="sendMessage()" style="background:var(--primary); color:black; border:none; width: 50px; height: 50px; border-radius: 50%; font-weight:bold;">></button>
+        <div style="padding:15px; background:#111; display:flex; gap:10px;">
+            <input type="text" id="chat-input" placeholder="Bura yazın..." style="margin:0;">
+            <button onclick="sendMessage()" style="background:var(--primary); border:none; padding:10px 20px; border-radius:10px; color:black; font-weight:bold;">></button>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, getDocs, deleteDoc, onSnapshot, query, limit, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCOq7UqFo6Y9ldVXRthRP6U02TayFkv53I",
             authDomain: "neftgame-e4de3.firebaseapp.com",
             projectId: "neftgame-e4de3",
             storageBucket: "neftgame-e4de3.firebasestorage.app",
-            messagingSenderId: "27529172910",
             appId: "1:27529172910:web:1a2a752e79295d47c39a3f"
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         let activeCode = "";
-        let lastShownReceipt = "";
 
-        // CANLI BİLDİRİŞ (SİLTƏMƏDƏN ÇIXARILDI - YALNIZ REAL SİFARİŞLƏR)
-        const qLive = query(collection(db, "receipts"), orderBy("usedAt", "desc"), limit(1));
-        onSnapshot(qLive, (snap) => {
-            snap.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                    const data = change.doc.data();
-                    if(data.receiptID === lastShownReceipt) return;
-                    lastShownReceipt = data.receiptID;
-                    document.getElementById('notif-user').innerText = "ID: " + data.usedBy.substring(0,4) + "***";
-                    document.getElementById('notif-pack').innerText = data.packet + " yükləndi!";
-                    const notif = document.getElementById('live-notif');
-                    notif.classList.add('show');
-                    setTimeout(() => notif.classList.remove('show'), 7000);
-                }
-            });
-        });
+        // 🟢 FAKE BİLDİRİŞ SİSTEMİ
+        const fakeIDs = ["512", "539", "588", "551", "544", "612", "721"];
+        const fakePacks = ["660 UC", "1920 UC", "3120 UC", "8100 UC"];
+        
+        function showFakeNotif() {
+            const rid = fakeIDs[Math.floor(Math.random()*fakeIDs.length)] + "****";
+            const rpk = fakePacks[Math.floor(Math.random()*fakePacks.length)];
+            document.getElementById('notif-user').innerText = "Id:" + rid;
+            document.getElementById('notif-pack').innerText = rpk + " sipariş verdi!";
+            const n = document.getElementById('live-notif');
+            n.classList.add('show');
+            setTimeout(() => n.classList.remove('show'), 6000);
+        }
+        setInterval(showFakeNotif, 18000); // Hər 18 saniyədən bir
+        setTimeout(showFakeNotif, 3000); // İlk girişdə 3 san sonra
 
-        // ADMİN FUNKSİYALAR
-        onSnapshot(doc(db, "settings", "announcement"), (s) => {
-            if(s.exists() && s.data().text) {
-                document.getElementById('announcement-bar').style.display = 'block';
-                document.getElementById('ann-text').innerText = s.data().text;
-            }
-        });
-
+        // 🟢 GİRİŞ VƏ POLİTİKA
         window.verifyCode = async function() {
-            const code = document.getElementById('access-code').value.trim().toUpperCase();
-            if(code === "ADMIN2026") { document.getElementById('admin-panel').style.display = 'block'; loadCodes(); return; }
-            const snap = await getDoc(doc(db, "codes", code));
-            if(snap.exists() && !snap.data().used) { activeCode = code; runLoader(() => showStep('step2')); }
-            else { document.getElementById('error-msg').innerText = "Kod yanlışdır və ya istifadə olunub!"; }
+            const val = document.getElementById('access-code').value.trim().toUpperCase();
+            if(!val) return;
+            const snap = await getDoc(doc(db, "codes", val));
+            if(snap.exists() && !snap.data().used) {
+                activeCode = val;
+                showStep('step-policy');
+                startPolicyTimer();
+            } else { alert("Kod yanlışdır!"); }
+        }
+
+        function startPolicyTimer() {
+            let sec = 3;
+            const btn = document.getElementById('agree-btn');
+            const iv = setInterval(() => {
+                sec--;
+                btn.innerText = `Oxudum, Razılaşdım (${sec})`;
+                if(sec <= 0) {
+                    clearInterval(iv);
+                    btn.disabled = false;
+                    btn.innerText = "Oxudum, Razılaşdım";
+                }
+            }, 1000);
         }
 
         window.processOrder = async function() {
             const pid = document.getElementById('player-id').value;
+            if(pid.length < 5) return alert("ID çox qısadır!");
             const pack = document.getElementById('packet-select').value;
-            if(pid.length < 5) return alert("Düzgün ID daxil edin!");
-            const rid = "NFT-" + Math.random().toString(36).substr(2, 7).toUpperCase();
-            const data = { used: true, usedBy: pid, packet: pack, usedAt: new Date().getTime(), receiptID: rid };
-            await updateDoc(doc(db, "codes", activeCode), data);
-            await setDoc(doc(db, "receipts", rid), data);
-            runLoader(() => { generateReceipt(pid, pack, rid); showStep('step3'); });
+            const rid = "NFT-" + Math.floor(Math.random()*999999);
+            
+            await updateDoc(doc(db, "codes", activeCode), { used: true, usedBy: pid, packet: pack, usedAt: new Date().getTime(), receiptID: rid });
+            await setDoc(doc(db, "receipts", rid), { usedBy: pid, packet: pack, usedAt: new Date().getTime(), receiptID: rid });
+
+            generateReceipt(pid, pack, rid);
+            showStep('step-receipt');
         }
 
-        window.loadCodes = async function() {
-            const snap = await getDocs(collection(db, "codes"));
-            const list = document.getElementById('codes-list'); list.innerHTML = "";
-            snap.forEach(d => {
-                list.innerHTML += `<div class="code-card"><span>${d.id} [${d.data().used?'❌':'✅'}]</span><small onclick="deleteCode('${d.id}')" style="color:red; cursor:pointer;">SİL</small></div>`;
-            });
-        }
-        window.addNewCodeUI = async function() {
-            const v = prompt("Yeni kod:");
-            if(v) { await setDoc(doc(db, "codes", v.toUpperCase()), { used: false }); loadCodes(); }
-        }
-        window.deleteCode = async function(id) { if(confirm("Silinsin?")) { await deleteDoc(doc(db, "codes", id)); loadCodes(); } }
-        window.updateAnn = async function() {
-            const t = document.getElementById('admin-ann-input').value;
-            await setDoc(doc(db, "settings", "announcement"), { text: t });
-        }
-    </script>
+        window.showStep = (s) => { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
+        window.openChat = () => document.getElementById('chat-overlay').style.display='flex';
+        window.closeChat = () => document.getElementById('chat-overlay').style.display='none';
 
-    <script>
-        // UI & CHAT LOGIC
-        function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
-        function runLoader(cb) { showStep('step-loader'); let p = 0; let iv = setInterval(() => { p += 25; document.getElementById('progress-fill').style.width = p + "%"; if(p >= 100) { clearInterval(iv); cb(); } }, 200); }
-        function openChat() { document.getElementById('chat-overlay').style.display='flex'; }
-        function closeChat() { document.getElementById('chat-overlay').style.display='none'; }
-
-        const botQA = {
-            "qiymet": "💰 Qiymətlərimiz çox münasibdir:\n660 UC: 5 AZN\n1920 UC: 13 AZN\n8100 UC: 35 AZN\nBütün yükləmələr rəsmidir.",
-            "vaxt": "⏳ Sifarişiniz sistemə düşdükdən sonra 5-15 dəqiqə ərzində ID hesabınıza yüklənir. Gecikmə olarsa, operatora yazın.",
-            "etibar": "🛡️ Neft Game 3 ildir xidmətinizdədir. 10.000+ uğurlu sifarişimiz var. Hesabınızın oğurlanma riski 0-dır (Şifrə tələb olunmur).",
-            "id_sehv": "❌ Əgər ID-ni səhv yazmısınızsa, təcili olaraq WhatsApp xəttimizə (+994 77 124 49 44) bildirin. Yükləmə gedibsə, geri qaytarılmır.",
-            "operator": "👨‍💻 Canlı dəstək üçün WhatsApp: +994 77 124 49 44. İş saatları: 09:00 - 00:00."
-        };
-
-        function botAsk(key) {
-            const body = document.getElementById('chat-body');
-            body.innerHTML += `<div class="message user-msg">${document.querySelector(`[onclick="botAsk('${key}')"]`).innerText}</div>`;
-            setTimeout(() => {
-                body.innerHTML += `<div class="message bot-msg">${botQA[key]}</div>`;
-                body.scrollTop = body.scrollHeight;
-            }, 500);
-        }
-
-        function sendMessage() {
+        window.sendMessage = function() {
             const inp = document.getElementById('chat-input');
             const txt = inp.value.toLowerCase();
-            if(!txt) return;
             const body = document.getElementById('chat-body');
+            if(!txt) return;
             body.innerHTML += `<div class="message user-msg">${inp.value}</div>`;
             
-            let reply = "Başa düşmədim. Zəhmət olmasa hazır suallardan istifadə edin və ya WhatsApp-a yazın.";
-            if(txt.includes("salam")) reply = "Salam! Sizə necə kömək edə bilərəm? 😊";
-            if(txt.includes("qiymet") || txt.includes("neçə")) reply = botQA.qiymet;
-            if(txt.includes("vaxt") || txt.includes("nə zaman")) reply = botQA.vaxt;
-            if(txt.includes("güvən") || txt.includes("oğurlanar")) reply = botQA.etibar;
-            
+            let reply = "Məlumat üçün operatora yazın: +994 77 124 49 44";
+            if(txt.includes("kart") || txt.includes("ödəniş") || txt.includes("hara")) {
+                reply = "💳 Onlayn ödəniş üçün kart məlumatı:<br><br><b>4244 4848 4180 8581</b><br><br>Ödəniş etdikdən sonra qəbzi operatora göndərin.";
+            } else if(txt.includes("qiymət")) {
+                reply = "💰 Qiymətlər:<br>660 UC - 5 AZN<br>1920 UC - 13 AZN<br>8100 UC - 35 AZN";
+            }
+
             setTimeout(() => {
                 body.innerHTML += `<div class="message bot-msg">${reply}</div>`;
                 body.scrollTop = body.scrollHeight;
-            }, 600);
+            }, 500);
             inp.value = "";
         }
 
-        function generateReceipt(id, pack, rID) {
-            const canvas = document.getElementById('receiptCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.fillStyle = "#0f0f12"; ctx.fillRect(0,0,400,550);
-            ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,550);
-            ctx.fillStyle = "#00f2ff"; ctx.font = "bold 26px Arial"; ctx.fillText("NEFT GAME SHOP", 85, 60);
-            ctx.fillStyle = "#fff"; ctx.font = "14px Courier New";
-            ctx.fillText("OYUNÇU ID: " + id, 40, 180);
-            ctx.fillText("MƏHSUL: " + pack, 40, 230);
-            ctx.fillText("TARİX: " + new Date().toLocaleString(), 40, 280);
-            ctx.fillStyle = "#00f2ff"; ctx.fillText("KOD: " + rID, 40, 330);
-            ctx.fillStyle = "#00ff88"; ctx.font = "bold 22px Arial"; ctx.fillText("TƏSDİQLƏNDİ", 120, 470);
+        function generateReceipt(id, p, rid) {
+            const c = document.getElementById('receiptCanvas'); const x = c.getContext('2d');
+            x.fillStyle = "#111"; x.fillRect(0,0,400,550);
+            x.strokeStyle = "#00f2ff"; x.lineWidth = 10; x.strokeRect(0,0,400,550);
+            x.fillStyle = "#00f2ff"; x.font = "bold 24px Arial"; x.fillText("NEFT GAME SHOP", 85, 60);
+            x.fillStyle = "#fff"; x.font = "16px Arial";
+            x.fillText("ID: " + id, 50, 180);
+            x.fillText("Paket: " + p, 50, 240);
+            x.fillText("Qəbz No: " + rid, 50, 300);
+            x.fillText("Tarix: " + new Date().toLocaleString(), 50, 360);
+            x.fillStyle = "#00ff88"; x.fillText("ÖDƏNİŞ TƏSDİQLƏNDİ", 95, 480);
         }
-        function downloadReceipt() { const l = document.createElement('a'); l.download='neft.png'; l.href=document.getElementById('receiptCanvas').toDataURL(); l.click(); }
+        window.downloadReceipt = () => { const l = document.createElement('a'); l.download='qebz.png'; l.href=document.getElementById('receiptCanvas').toDataURL(); l.click(); }
     </script>
 </body>
-</html>
+    </html>
+    
