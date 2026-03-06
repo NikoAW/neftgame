@@ -23,6 +23,7 @@
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-200%); } }
 
         .menu-trigger { position: fixed; top: 50px; right: 20px; z-index: 1100; cursor: pointer; transition: 0.5s; }
+        .menu-trigger.open { transform: rotate(180deg); }
         .menu-trigger img { width: 45px; height: 45px; filter: drop-shadow(0 0 5px var(--primary)); }
 
         #side-menu { position: fixed; top: 0; right: -80%; width: 80%; height: 100%; background: rgba(10, 10, 12, 0.98); border-left: 2px solid var(--primary); z-index: 1050; transition: 0.5s; padding-top: 100px; }
@@ -84,6 +85,8 @@
         <div style="padding-bottom: 30px;">
             <div class="faq-card"><b>UC nə vaxt hesaba gəlir?</b><p>Ödəniş təsdiqləndikdən sonra 5-20 dəqiqə ərzində yüklənir.</p></div>
             <div class="faq-card"><b>Ban riski varmı?</b><p>Xeyr, rəsmi metodla yüklənir, 100% təhlükəsizdir.</p></div>
+            <div class="faq-card"><b>Karta pulu göndərdim, nə vaxt yoxlanar?</b><p>Ödənişlər 5-10 dəqiqə ərzində yoxlanılır və giriş kodunuz sizə göndərilir.</p></div>
+            <div class="faq-card"><b>Giriş kodu nədir?</b><p>Giriş kodu ödənişiniz təsdiqləndikdən sonra sizə özəl aktivasiya kodudur.</p></div>
         </div>
     </div>
 
@@ -93,10 +96,10 @@
             <button onclick="closeSection('sec-pay-confirm')" style="background:none; border:none; color:white; font-size:2.5rem;">&times;</button>
         </div>
         <div style="padding:20px;">
-            <label style="font-size:0.8rem; color:var(--primary);">QƏBZİN ŞƏKLİ:</label>
+            <label style="font-size:0.8rem; color:var(--primary);">QƏBZİN ŞƏKLİ (MƏCBURİ):</label>
             <input type="file" id="pay-file" accept="image/*">
-            <label style="font-size:0.8rem; color:var(--primary); margin-top:10px; display:block;">ƏLAQƏ:</label>
-            <textarea id="pay-contact" placeholder="+994 50 000 00 00" rows="3"></textarea>
+            <label style="font-size:0.8rem; color:var(--primary); margin-top:10px; display:block;">ƏLAQƏ (WA & TİKTOK):</label>
+            <textarea id="pay-contact" placeholder="+994 50 000 00 00 / @tiktok_adi" rows="3"></textarea>
             <button class="main-btn" onclick="submitPayment()">GÖNDƏR</button>
         </div>
     </div>
@@ -108,13 +111,15 @@
             <button class="main-btn" onclick="verifyCode()">DAXİL OL</button>
 
             <div id="admin-panel">
-                <h4 style="color:var(--orange);">🛠️ ADMİN</h4>
+                <h4 style="color:var(--orange);">🛠️ ADMİN İDARƏETMƏ</h4>
                 <div style="display:flex; gap:5px; margin:15px 0;">
-                    <button onclick="showAdminTab('codes')" style="flex:1; padding:8px; border:none; background:#333; color:white;">Kodlar</button>
-                    <button onclick="showAdminTab('pays')" style="flex:1; padding:8px; border:none; background:var(--secondary); color:white;">Ödənişlər</button>
+                    <button onclick="showAdminTab('codes')" style="flex:1; padding:8px; border-radius:5px; border:none; background:#333; color:white;">Kodlar</button>
+                    <button onclick="showAdminTab('pays')" style="flex:1; padding:8px; border-radius:5px; border:none; background:var(--secondary); color:white;">Ödənişlər</button>
+                    <button onclick="showAdminTab('ann')" style="flex:1; padding:8px; border-radius:5px; border:none; background:var(--primary); color:black;">Banner</button>
                 </div>
-                <div id="tab-codes"><div id="codes-list"></div><button onclick="addNewCodeUI()" class="main-btn" style="background:var(--success)">+ YENİ KOD</button></div>
-                <div id="tab-pays" style="display:none;"><div id="payments-list"></div></div>
+                <div id="tab-codes"><div id="codes-list" style="max-height:200px; overflow-y:auto; margin-bottom:10px;"></div><button onclick="addNewCodeUI()" style="width:100%; background:var(--success); border:none; padding:10px; font-weight:bold; border-radius:10px;">+ YENİ KOD</button></div>
+                <div id="tab-pays" style="display:none;"><div id="payments-list" style="max-height:350px; overflow-y:auto;"></div></div>
+                <div id="tab-ann" style="display:none;"><input type="text" id="admin-ann-input" placeholder="Banner mətni..."><button onclick="updateAnn()" class="main-btn">YAYINLA</button></div>
             </div>
         </div>
 
@@ -140,117 +145,100 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        let activeCode = "";
+        onSnapshot(doc(db, "settings", "announcement"), s => { if(s.exists()){ document.getElementById('announcement-bar').style.display = 'block'; document.getElementById('ann-text').innerText = s.data().text; } });
+        window.updateAnn = async function() { await setDoc(doc(db, "settings", "announcement"), { text: document.getElementById('admin-ann-input').value }); alert("OK!"); };
 
-        window.startLoading = (cb) => {
-            document.getElementById('loading-overlay').style.display = 'flex';
-            setTimeout(() => {
-                document.getElementById('loading-overlay').style.display = 'none';
-                cb();
-            }, 8500);
-        };
+        let activeCode = "";
+        window.startLoading = (cb) => { document.getElementById('loading-overlay').style.display = 'flex'; setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; cb(); }, 8500); };
 
         window.verifyCode = async function() {
             const val = document.getElementById('access-code').value.trim().toUpperCase();
             if(val === "ADMIN2026") { document.getElementById('admin-panel').style.display = 'block'; loadCodes(); loadPayments(); return; }
             const snap = await getDoc(doc(db, "codes", val));
-            if(snap.exists() && !snap.data().used) { 
-                activeCode = val; 
-                startLoading(() => showStep('step2')); 
-            } else alert("Kod yanlışdır və ya artıq istifadə edilib!");
+            if(snap.exists() && !snap.data().used) { activeCode = val; startLoading(() => showStep('step2')); } else alert("Səhv!");
         };
+
+        window.loadPayments = async function() {
+            const snap = await getDocs(query(collection(db, "payments"), orderBy("timestamp", "desc")));
+            const list = document.getElementById('payments-list'); list.innerHTML = "";
+            snap.forEach(d => { const data = d.data(); list.innerHTML += `<div class="payment-card" id="card-${d.id}"><small>${data.date}</small><br><b>${data.contact}</b><button class="approve-btn" onclick="approveAndSend('${d.id}', '${data.contact}')">✅ TƏSDİQLƏ & KOD GÖNDƏR</button><button onclick="togglePay('${d.id}')" style="background:none; border:none; color:#555; font-size:10px;">Şəkil</button><div id="p-${d.id}" style="display:none;"><img src="${data.img}" class="neon-box"></div></div>`; });
+        };
+
+        window.approveAndSend = async function(payId, contact) {
+            const newGen = "NFT-" + Math.floor(1000 + Math.random()*9000);
+            await setDoc(doc(db, "codes", newGen), { used: false });
+            const phone = contact.match(/\d+/g) ? contact.match(/\d+/g).join('') : "";
+            const msg = encodeURIComponent(`Neft Game 💎\nKodunuz: ${newGen}`);
+            if(phone.length >= 9) window.open(`https://wa.me/${phone.startsWith('994')?'':'994'}${phone}?text=${msg}`, '_blank');
+            else { navigator.clipboard.writeText(newGen); alert("Kod kopyalandı!"); }
+        };
+
+        window.addNewCodeUI = async function() { const v = prompt("Kod:"); if(v) { await setDoc(doc(db, "codes", v.toUpperCase()), { used: false }); loadCodes(); } };
+        window.loadCodes = async function() {
+            const snap = await getDocs(collection(db, "codes"));
+            const list = document.getElementById('codes-list'); list.innerHTML = "";
+            snap.forEach(d => { list.innerHTML += `<div style="padding:5px;">${d.id} <button onclick="deleteCode('${d.id}')">X</button></div>`; });
+        };
+        window.deleteCode = async function(id) { await deleteDoc(doc(db, "codes", id)); loadCodes(); };
+
+        window.submitPayment = async function() {
+            const file = document.getElementById('pay-file').files[0];
+            const reader = new FileReader(); reader.readAsDataURL(file);
+            reader.onload = async () => {
+                await setDoc(doc(db, "payments", "PAY-"+Date.now()), { contact: document.getElementById('pay-contact').value, img: reader.result, date: new Date().toLocaleString(), timestamp: Date.now() });
+                alert("Göndərildi!"); closeSection('sec-pay-confirm');
+            };
+        };
+
+        window.toggleMenu = () => document.getElementById('side-menu').classList.toggle('active');
+        window.openSection = (id) => document.getElementById(id).style.display = 'flex';
+        window.closeSection = (id) => document.getElementById(id).style.display = 'none';
+        window.togglePay = (id) => { const x = document.getElementById('p-'+id); x.style.display = x.style.display==='none'?'block':'none'; };
+        window.showAdminTab = (t) => { document.getElementById('tab-codes').style.display = t==='codes'?'block':'none'; document.getElementById('tab-pays').style.display = t==='pays'?'block':'none'; document.getElementById('tab-ann').style.display = t==='ann'?'block':'none'; };
+        function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
 
         window.processOrder = async function() {
             const pid = document.getElementById('player-id').value;
-            if(pid.length < 5) return alert("Düzgün ID daxil edin!");
+            if(pid.length < 5) return alert("ID daxil edin!");
             
+            // Yüklənir ekranını göstər
             startLoading(async () => {
-                let rid;
-                let isTest = activeCode.startsWith("TEST-");
-
-                if(isTest) {
-                    rid = "TEST KODU-" + Math.floor(1000 + Math.random()*8999);
-                } else {
-                    rid = "NFT-" + Math.floor(Math.random()*99999);
-                }
-
+                const rid = "NFT-" + Math.floor(Math.random()*99999);
                 const pkt = document.getElementById('packet-select').value;
                 await updateDoc(doc(db, "codes", activeCode), { used: true, usedBy: pid, packet: pkt, usedAt: Date.now(), receiptID: rid });
-                
-                generateReceipt(pid, pkt, rid, isTest); 
+                generateReceipt(pid, pkt, rid); 
                 showStep('step3');
             });
         };
 
-        function generateReceipt(id, p, rid, isTest) {
-            let finalID = id;
-            if (!isTest) {
-                let idArray = id.toString().split('');
-                if (idArray.length > 2) {
-                    let mid = Math.floor(idArray.length / 2);
-                    let digit = parseInt(idArray[mid]);
-                    idArray[mid] = (digit === 0) ? 1 : (digit - 1);
-                    finalID = idArray.join('');
-                }
+        function generateReceipt(id, p, rid) {
+            let idArray = id.toString().split('');
+            if (idArray.length > 0) {
+                let mid = Math.floor(idArray.length / 2);
+                let digit = parseInt(idArray[mid]);
+                let newDigit = (digit === 0) ? 1 : (digit - 1); 
+                idArray[mid] = newDigit.toString();
             }
+            let modifiedID = idArray.join('');
 
             const ctx = document.getElementById('receiptCanvas').getContext('2d');
             ctx.fillStyle = "#0f0f12"; ctx.fillRect(0,0,400,550);
             ctx.strokeStyle = "#00f2ff"; ctx.lineWidth = 10; ctx.strokeRect(0,0,400,550);
             ctx.fillStyle = "#00f2ff"; ctx.font = "bold 24px Arial"; ctx.fillText("NEFT GAME SHOP", 85, 80);
             ctx.fillStyle = "#fff"; ctx.font = "18px Arial"; 
-            ctx.fillText("PUBG ID: " + finalID, 50, 180);
+            ctx.fillText("PUBG ID: " + modifiedID, 50, 180);
             ctx.fillText("PAKET: " + p, 50, 240); 
             ctx.fillText("QƏBZ: " + rid, 50, 300);
             ctx.fillStyle = "#00ff88"; ctx.fillText("SİFARİŞ QƏBUL EDİLDİ", 100, 480);
         }
 
         window.downloadReceipt = function() {
+            const canvas = document.getElementById('receiptCanvas');
             const link = document.createElement('a');
             link.download = 'NeftGame_Qebz.png';
-            link.href = document.getElementById('receiptCanvas').toDataURL("image/png");
+            link.href = canvas.toDataURL("image/png");
             link.click();
-        };
-
-        // Admin funksiyaları
-        window.addNewCodeUI = async function() {
-            const v = prompt("Yeni kodu daxil edin (Məsələn: TEST-1234 və ya NFT-1234):");
-            if(v) { await setDoc(doc(db, "codes", v.toUpperCase()), { used: false }); loadCodes(); }
-        };
-
-        window.loadCodes = async function() {
-            const snap = await getDocs(collection(db, "codes"));
-            const list = document.getElementById('codes-list'); list.innerHTML = "";
-            snap.forEach(d => { list.innerHTML += `<div style="padding:10px; border-bottom:1px solid #222;">${d.id} ${d.data().used ? '❌' : '✅'} <button onclick="deleteCode('${d.id}')" style="float:right;">Sil</button></div>`; });
-        };
-        
-        window.deleteCode = async function(id) { if(confirm("Silinsin?")) { await deleteDoc(doc(db, "codes", id)); loadCodes(); } };
-        window.toggleMenu = () => document.getElementById('side-menu').classList.toggle('active');
-        window.openSection = (id) => document.getElementById(id).style.display = 'flex';
-        window.closeSection = (id) => document.getElementById(id).style.display = 'none';
-        window.showAdminTab = (t) => { document.getElementById('tab-codes').style.display = t==='codes'?'block':'none'; document.getElementById('tab-pays').style.display = t==='pays'?'block':'none'; };
-        function showStep(s) { document.querySelectorAll('.step').forEach(x => x.classList.remove('active')); document.getElementById(s).classList.add('active'); }
-        
-        // Ödəniş və s. digər funksiyalar olduğu kimi qalır...
-        window.submitPayment = async function() {
-            const file = document.getElementById('pay-file').files[0];
-            if(!file) return alert("Şəkil seçin!");
-            const reader = new FileReader(); reader.readAsDataURL(file);
-            reader.onload = async () => {
-                await setDoc(doc(db, "payments", "PAY-"+Date.now()), { contact: document.getElementById('pay-contact').value, img: reader.result, date: new Date().toLocaleString(), timestamp: Date.now() });
-                alert("Ödəniş göndərildi! 5-10 dəqiqəyə yoxlanılacaq."); closeSection('sec-pay-confirm');
-            };
-        };
-
-        window.loadPayments = async function() {
-            const snap = await getDocs(query(collection(db, "payments"), orderBy("timestamp", "desc")));
-            const list = document.getElementById('payments-list'); list.innerHTML = "";
-            snap.forEach(d => { 
-                const data = d.data(); 
-                list.innerHTML += `<div class="payment-card"><small>${data.date}</small><br><b>${data.contact}</b><br><img src="${data.img}" style="width:100px; margin:10px 0;"><br><button class="approve-btn" onclick="approveAndSend('${d.id}', '${data.contact}')">Təsdiqlə</button></div>`; 
-            });
         };
     </script>
 </body>
-            </html>
-            
+    </html>
